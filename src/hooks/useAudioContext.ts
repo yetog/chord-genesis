@@ -7,6 +7,7 @@ export function useAudioContext() {
   const [isLooping, setIsLooping] = useState(false);
   const [currentChordIndex, setCurrentChordIndex] = useState(-1);
   const [tempo, setTempo] = useState(120);
+  const [masterVolume, setMasterVolume] = useState(0.6); // 60% default volume
   const audioContextRef = useRef<AudioContext | null>(null);
   const masterGainRef = useRef<GainNode | null>(null);
   const compressorRef = useRef<DynamicsCompressorNode | null>(null);
@@ -19,7 +20,7 @@ export function useAudioContext() {
       
       // Create master gain control
       masterGainRef.current = audioContextRef.current.createGain();
-      masterGainRef.current.gain.setValueAtTime(0.3, audioContextRef.current.currentTime); // Master volume at 30%
+      masterGainRef.current.gain.setValueAtTime(masterVolume, audioContextRef.current.currentTime);
       
       // Create compressor to prevent clipping
       compressorRef.current = audioContextRef.current.createDynamicsCompressor();
@@ -39,6 +40,13 @@ export function useAudioContext() {
     }
     
     return audioContextRef.current;
+  }, []);
+
+  const updateMasterVolume = useCallback((volume: number) => {
+    setMasterVolume(volume);
+    if (masterGainRef.current) {
+      masterGainRef.current.gain.setValueAtTime(volume, masterGainRef.current.context.currentTime);
+    }
   }, []);
 
   const playChord = useCallback(async (
@@ -103,7 +111,7 @@ export function useAudioContext() {
       const noteDuration = pattern.noteDurations[durationIndex] * (duration / 1000);
       
       // Much lower volume levels to prevent clipping
-      const baseVolume = preview ? 0.008 : 0.015;
+      const baseVolume = preview ? 0.015 : 0.03; // Increased base volume since we have user control
       const volume = baseVolume / Math.max(notesToPlay.length, 1);
       const attackTime = preview ? 0.01 : 0.02;
       const sustainTime = noteDuration - (preview ? 0.1 : 0.3);
@@ -198,7 +206,9 @@ export function useAudioContext() {
     isLooping,
     currentChordIndex,
     tempo,
+    masterVolume,
     setTempo,
+    setMasterVolume: updateMasterVolume,
     toggleLoop,
     playChord,
     playChordPreview,

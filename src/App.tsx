@@ -22,7 +22,9 @@ function App() {
     isLooping,
     currentChordIndex, 
     tempo, 
+    masterVolume,
     setTempo, 
+    setMasterVolume,
     toggleLoop,
     playProgression, 
     playChordPreview,
@@ -191,6 +193,8 @@ function App() {
                 onToggleLoop={toggleLoop}
                 tempo={tempo}
                 onTempoChange={setTempo}
+                masterVolume={masterVolume}
+                onVolumeChange={setMasterVolume}
               />
             </div>
           )}

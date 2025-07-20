@@ -12,6 +12,8 @@ interface PlaybackBarProps {
   onNext?: () => void;
   tempo?: number;
   onTempoChange?: (tempo: number) => void;
+  masterVolume?: number;
+  onVolumeChange?: (volume: number) => void;
 }
 
 export default function PlaybackBar({
@@ -24,7 +26,9 @@ export default function PlaybackBar({
   onPrevious,
   onNext,
   tempo = 120,
-  onTempoChange
+  onTempoChange,
+  masterVolume = 0.6,
+  onVolumeChange
 }: PlaybackBarProps) {
   const progress = totalChords > 0 ? (currentChordIndex + 1) / totalChords : 0;
 
@@ -49,6 +53,23 @@ export default function PlaybackBar({
               className="w-20 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
             />
             <span className="text-sm font-mono text-slate-700 w-8">{tempo}</span>
+          </div>
+        )}
+        
+        {/* Volume Control */}
+        {onVolumeChange && (
+          <div className="flex items-center gap-2">
+            <Volume2 className="w-4 h-4 text-slate-600" />
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={masterVolume}
+              onChange={(e) => onVolumeChange(parseFloat(e.target.value))}
+              className="w-20 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
+            />
+            <span className="text-sm font-mono text-slate-700 w-8">{Math.round(masterVolume * 100)}%</span>
           </div>
         )}
       </div>
