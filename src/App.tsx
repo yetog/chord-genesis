@@ -52,7 +52,7 @@ function App() {
     if (progression) {
       playProgression(progression.chords, selectedRhythmPattern, 'sine');
     }
-  }, [progression, playProgression, selectedRhythmPattern, selectedInstrument]);
+  }, [progression, playProgression, selectedRhythmPattern]);
 
   const handleExport = useCallback(async () => {
     if (!progression) return;
