@@ -1,11 +1,13 @@
 import React from 'react';
 import { Shuffle, Download, Play, Pause, Settings, Music, Sliders } from 'lucide-react';
 import { KEYS, SCALES, CHORD_TEMPLATES } from '../types/music';
+import { RHYTHM_PATTERNS } from '../utils/rhythmPatterns';
 
 interface ControlsProps {
   selectedKey: string;
   selectedScale: string;
   selectedTemplate: string;
+  selectedRhythmPattern: string;
   isPlaying: boolean;
   addExtensions: boolean;
   isExporting?: boolean;
@@ -13,6 +15,7 @@ interface ControlsProps {
   onKeyChange: (key: string) => void;
   onScaleChange: (scale: string) => void;
   onTemplateChange: (template: string) => void;
+  onRhythmChange: (pattern: string) => void;
   onShuffle: () => void;
   onPlay: () => void;
   onExport: () => void;
@@ -23,6 +26,7 @@ export default function Controls({
   selectedKey,
   selectedScale,
   selectedTemplate,
+  selectedRhythmPattern,
   isPlaying,
   addExtensions,
   isExporting = false,
@@ -30,6 +34,7 @@ export default function Controls({
   onKeyChange,
   onScaleChange,
   onTemplateChange,
+  onRhythmChange,
   onShuffle,
   onPlay,
   onExport,
@@ -86,7 +91,7 @@ export default function Controls({
           <h3 className="font-semibold text-slate-900 text-lg">Progression Settings</h3>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Key Selection */}
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
@@ -144,6 +149,24 @@ export default function Controls({
             </select>
           </div>
         </div>
+          {/* Rhythm Pattern Selection */}
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
+              <Music className="w-4 h-4 text-amber-500" />
+              Rhythm
+            </label>
+            <select
+              value={selectedRhythmPattern}
+              onChange={(e) => onRhythmChange(e.target.value)}
+              className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 font-medium"
+            >
+              {RHYTHM_PATTERNS.map(pattern => (
+                <option key={pattern.name} value={pattern.name}>
+                  {pattern.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
         {/* Extensions Toggle */}
         <div className="mt-6 flex items-center gap-3 p-4 bg-white/40 rounded-xl border border-slate-200/50">

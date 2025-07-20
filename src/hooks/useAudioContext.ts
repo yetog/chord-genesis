@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { Chord } from '../types/music';
+import { RHYTHM_PATTERNS } from '../utils/rhythmPatterns';
 
 export function useAudioContext() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -22,7 +23,12 @@ export function useAudioContext() {
     return audioContextRef.current;
   }, []);
 
-  const playChord = useCallback(async (chord: Chord, duration: number = 2000, preview: boolean = false) => {
+  const playChord = useCallback(async (
+    chord: Chord, 
+    duration: number = 2000, 
+    preview: boolean = false,
+    rhythmPattern: string = 'Block Chord'
+  ) => {
     const audioContext = await initAudioContext();
     
     // Stop any currently playing oscillators
@@ -35,8 +41,31 @@ export function useAudioContext() {
     });
     oscillatorsRef.current = [];
 
-    // Create oscillators for each note in the chord
-    chord.midiNotes.forEach((midiNote, index) => {
+    // Get rhythm pattern data
+    const pattern = RHYTHM_PATTERNS.find(p => p.name === rhythmPattern) || RHYTHM_PATTERNS[0];
+    
+    // Prepare notes based on rhythm pattern
+    let notesToPlay = [...chord.midiNotes];
+    
+    // Handle special rhythm patterns
+    if (pattern.name === 'Down Arpeggio') {
+      notesToPlay = [...chord.midiNotes].reverse();
+    } else if (pattern.name === 'Broken Chord' && chord.midiNotes.length >= 3) {
+      // Root, fifth, third pattern (reorder notes)
+      const root = chord.midiNotes[0];
+      const third = chord.midiNotes[1];
+      const fifth = chord.midiNotes[2];
+      const seventh = chord.midiNotes[3];
+      notesToPlay = [root, fifth, third, seventh].filter(Boolean);
+    } else if (pattern.name === 'Waltz' && chord.midiNotes.length >= 3) {
+      // Root alone, then chord
+      const root = chord.midiNotes[0];
+      const upperNotes = chord.midiNotes.slice(1);
+      notesToPlay = [root, ...upperNotes, ...upperNotes];
+    }
+
+    // Create oscillators for each note with rhythm timing
+    notesToPlay.forEach((midiNote, index) => {
       const frequency = 440 * Math.pow(2, (midiNote - 69) / 12);
       
       const oscillator = audioContext.createOscillator();
@@ -48,22 +77,32 @@ export function useAudioContext() {
       oscillator.type = 'sine';
       oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
       
+      // Calculate timing based on rhythm pattern
+      const timingIndex = Math.min(index, pattern.noteTimings.length - 1);
+      const durationIndex = Math.min(index, pattern.noteDurations.length - 1);
+      
+      const startDelay = pattern.noteTimings[timingIndex] * (duration / 1000) * 0.8; // 80% of chord duration for timing
+      const noteDuration = pattern.noteDurations[durationIndex] * (duration / 1000);
+      
       // Enhanced legato envelope for smoother playback
-      const volume = (preview ? 0.03 : 0.08) / chord.midiNotes.length;
+      const baseVolume = preview ? 0.03 : 0.08;
+      const volume = baseVolume / Math.max(notesToPlay.length, 1);
       const attackTime = preview ? 0.01 : 0.02;
-      const sustainTime = duration / 1000 - (preview ? 0.1 : 0.3);
+      const sustainTime = noteDuration - (preview ? 0.1 : 0.3);
       const releaseTime = preview ? 0.08 : 0.25;
       
-      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-      // Smooth attack
-      gainNode.gain.linearRampToValueAtTime(volume, audioContext.currentTime + attackTime);
-      // Sustain at slightly reduced volume for legato effect
-      gainNode.gain.linearRampToValueAtTime(volume * 0.85, audioContext.currentTime + sustainTime);
-      // Gentle release for smooth transitions
-      gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + sustainTime + releaseTime);
+      const startTime = audioContext.currentTime + startDelay;
       
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + sustainTime + releaseTime);
+      gainNode.gain.setValueAtTime(0, startTime);
+      // Smooth attack
+      gainNode.gain.linearRampToValueAtTime(volume, startTime + attackTime);
+      // Sustain at slightly reduced volume for legato effect
+      gainNode.gain.linearRampToValueAtTime(volume * 0.85, startTime + sustainTime);
+      // Gentle release for smooth transitions
+      gainNode.gain.linearRampToValueAtTime(0, startTime + sustainTime + releaseTime);
+      
+      oscillator.start(startTime);
+      oscillator.stop(startTime + sustainTime + releaseTime);
       
       oscillatorsRef.current.push(oscillator);
     });
@@ -73,7 +112,7 @@ export function useAudioContext() {
     setIsLooping(prev => !prev);
   }, []);
 
-  const playProgression = useCallback(async (chords: Chord[]) => {
+  const playProgression = useCallback(async (chords: Chord[], rhythmPattern: string = 'Block Chord') => {
     const chordDuration = (60 / tempo) * 1000 * 2; // 2 beats per chord
     
     if (isPlaying) {
@@ -104,7 +143,7 @@ export function useAudioContext() {
       }
 
       setCurrentChordIndex(index);
-      playChord(chords[index], chordDuration * 0.9); // Slightly overlap for legato
+      playChord(chords[index], chordDuration * 0.9, false, rhythmPattern); // Slightly overlap for legato
 
       timeoutRef.current = setTimeout(() => {
         playNextChord(index + 1);

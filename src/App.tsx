@@ -12,6 +12,7 @@ function App() {
   const [selectedKey, setSelectedKey] = useState('C');
   const [selectedScale, setSelectedScale] = useState('major');
   const [selectedTemplate, setSelectedTemplate] = useState('Random');
+  const [selectedRhythmPattern, setSelectedRhythmPattern] = useState('Block Chord');
   const [addExtensions, setAddExtensions] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [exportSuccess, setExportSuccess] = useState(false);
@@ -41,9 +42,9 @@ function App() {
 
   const handlePlay = useCallback(() => {
     if (progression) {
-      playProgression(progression.chords);
+      playProgression(progression.chords, selectedRhythmPattern);
     }
-  }, [progression, playProgression]);
+  }, [progression, playProgression, selectedRhythmPattern]);
 
   const handleExport = useCallback(async () => {
     if (!progression) return;
@@ -116,6 +117,10 @@ function App() {
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-amber-400 rounded-full" />
+                <span>Rhythmic Patterns</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-amber-400 rounded-full" />
                 <span>Music Theory Intelligence</span>
               </div>
             </div>
@@ -131,6 +136,7 @@ function App() {
             selectedKey={selectedKey}
             selectedScale={selectedScale}
             selectedTemplate={selectedTemplate}
+            selectedRhythmPattern={selectedRhythmPattern}
             isPlaying={isPlaying}
             addExtensions={addExtensions}
             isExporting={isExporting}
@@ -138,6 +144,7 @@ function App() {
             onKeyChange={setSelectedKey}
             onScaleChange={setSelectedScale}
             onTemplateChange={setSelectedTemplate}
+            onRhythmChange={setSelectedRhythmPattern}
             onShuffle={handleGenerate}
             onPlay={handlePlay}
             onExport={handleExport}
@@ -152,7 +159,7 @@ function App() {
                   {selectedKey} {progression.scale.charAt(0).toUpperCase() + progression.scale.slice(1)} Scale
                 </h2>
                 <p className="text-slate-600 text-lg">
-                  {selectedTemplate !== 'Random' ? selectedTemplate : 'Custom Progression'}
+                  {selectedTemplate !== 'Random' ? selectedTemplate : 'Custom Progression'} • {selectedRhythmPattern}
                 </p>
               </div>
 
@@ -197,7 +204,7 @@ function App() {
                 </h3>
                 <p className="text-slate-600 mb-8 text-lg leading-relaxed">
                   Click "Generate" to create your first chord progression.<br />
-                  <span className="text-sm text-slate-500">Hover over chords to preview • Export as MIDI for your DAW</span>
+                  <span className="text-sm text-slate-500">Choose rhythm patterns • Hover over chords to preview • Export as MIDI</span>
                 </p>
                 <button
                   onClick={handleGenerate}
