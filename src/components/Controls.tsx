@@ -8,7 +8,6 @@ interface ControlsProps {
   selectedScale: string;
   selectedTemplate: string;
   selectedRhythmPattern: string;
-  selectedInstrument: string;
   isPlaying: boolean;
   addExtensions: boolean;
   isExporting?: boolean;
@@ -17,7 +16,6 @@ interface ControlsProps {
   onScaleChange: (scale: string) => void;
   onTemplateChange: (template: string) => void;
   onRhythmChange: (pattern: string) => void;
-  onInstrumentChange: (instrument: string) => void;
   onShuffle: () => void;
   onPlay: () => void;
   onExport: () => void;
@@ -29,7 +27,6 @@ export default function Controls({
   selectedScale,
   selectedTemplate,
   selectedRhythmPattern,
-  selectedInstrument,
   isPlaying,
   addExtensions,
   isExporting = false,
@@ -38,7 +35,6 @@ export default function Controls({
   onScaleChange,
   onTemplateChange,
   onRhythmChange,
-  onInstrumentChange,
   onShuffle,
   onPlay,
   onExport,
@@ -154,24 +150,6 @@ export default function Controls({
           </div>
 
           {/* Instrument Selection */}
-          <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
-              <Music className="w-4 h-4 text-amber-500" />
-              Instrument
-            </label>
-            <select
-              value={selectedInstrument}
-              onChange={(e) => onInstrumentChange(e.target.value)}
-              className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 font-medium"
-            >
-              {INSTRUMENTS.map(instrument => (
-                <option key={instrument.name} value={instrument.type}>
-                  {instrument.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
           {/* Rhythm Pattern Selection */}
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
@@ -190,6 +168,7 @@ export default function Controls({
               ))}
             </select>
           </div>
+        </div>
 
         {/* Extensions Toggle */}
         <div className="mt-6 flex items-center gap-3 p-4 bg-white/40 rounded-xl border border-slate-200/50">
