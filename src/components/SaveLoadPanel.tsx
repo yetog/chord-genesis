@@ -322,7 +322,6 @@ export default function SaveLoadPanel({ currentIdea, onLoad, onClose }: SaveLoad
                       </div>
                     )}
 
-                    <div className="text-xs text-slate-500 dark:text-slate-400 mb-3">
                     <div className="text-xs text-gray-400 mb-3">
                       Updated {idea.updatedAt.toLocaleDateString()}
                     </div>
