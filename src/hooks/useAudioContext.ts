@@ -8,12 +8,30 @@ export function useAudioContext() {
   const [currentChordIndex, setCurrentChordIndex] = useState(-1);
   const [tempo, setTempo] = useState(120);
   const audioContextRef = useRef<AudioContext | null>(null);
+  const masterGainRef = useRef<GainNode | null>(null);
+  const compressorRef = useRef<DynamicsCompressorNode | null>(null);
   const oscillatorsRef = useRef<OscillatorNode[]>([]);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const initAudioContext = useCallback(async () => {
     if (!audioContextRef.current) {
       audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      
+      // Create master gain control
+      masterGainRef.current = audioContextRef.current.createGain();
+      masterGainRef.current.gain.setValueAtTime(0.3, audioContextRef.current.currentTime); // Master volume at 30%
+      
+      // Create compressor to prevent clipping
+      compressorRef.current = audioContextRef.current.createDynamicsCompressor();
+      compressorRef.current.threshold.setValueAtTime(-24, audioContextRef.current.currentTime);
+      compressorRef.current.knee.setValueAtTime(30, audioContextRef.current.currentTime);
+      compressorRef.current.ratio.setValueAtTime(12, audioContextRef.current.currentTime);
+      compressorRef.current.attack.setValueAtTime(0.003, audioContextRef.current.currentTime);
+      compressorRef.current.release.setValueAtTime(0.25, audioContextRef.current.currentTime);
+      
+      // Connect: compressor -> master gain -> destination
+      compressorRef.current.connect(masterGainRef.current);
+      masterGainRef.current.connect(audioContextRef.current.destination);
     }
     
     if (audioContextRef.current.state === 'suspended') {
@@ -72,7 +90,7 @@ export function useAudioContext() {
       const gainNode = audioContext.createGain();
       
       oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
+      gainNode.connect(compressorRef.current!);
       
       oscillator.type = 'sine';
       oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
@@ -84,25 +102,25 @@ export function useAudioContext() {
       const startDelay = pattern.noteTimings[timingIndex] * (duration / 1000) * 0.8; // 80% of chord duration for timing
       const noteDuration = pattern.noteDurations[durationIndex] * (duration / 1000);
       
-      // Enhanced legato envelope for smoother playback
-      const baseVolume = preview ? 0.025 : 0.05;
+      // Much lower volume levels to prevent clipping
+      const baseVolume = preview ? 0.008 : 0.015;
       const volume = baseVolume / Math.max(notesToPlay.length, 1);
       const attackTime = preview ? 0.01 : 0.02;
       const sustainTime = noteDuration - (preview ? 0.1 : 0.3);
-      const releaseTime = preview ? 0.12 : 0.5;
+      const releaseTime = preview ? 0.15 : 0.8;
       
       const startTime = audioContext.currentTime + startDelay;
       
       gainNode.gain.setValueAtTime(0, startTime);
       // Smooth attack
       gainNode.gain.linearRampToValueAtTime(volume, startTime + attackTime);
-      // Sustain at slightly reduced volume for legato effect
-      gainNode.gain.linearRampToValueAtTime(volume * 0.8, startTime + sustainTime);
-      // Gentle release for smooth transitions
-      gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + sustainTime + releaseTime + 0.2);
+      // Sustain at reduced volume for legato effect
+      gainNode.gain.linearRampToValueAtTime(volume * 0.6, startTime + sustainTime);
+      // Very gentle exponential release
+      gainNode.gain.setTargetAtTime(0, startTime + sustainTime, releaseTime / 3);
       
       oscillator.start(startTime);
-      oscillator.stop(startTime + sustainTime + releaseTime + 0.25); // Extended overlap
+      oscillator.stop(startTime + sustainTime + releaseTime + 0.5); // Extended overlap
       
       oscillatorsRef.current.push(oscillator);
     });
