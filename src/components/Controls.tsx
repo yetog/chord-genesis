@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shuffle, Download, Play, Pause, Settings, Music, Sliders, FolderOpen, Music2, Sun, Moon } from 'lucide-react';
+import { Shuffle, Download, Play, Pause, Settings, Music, Sliders, FolderOpen, Music2, RefreshCw } from 'lucide-react';
 import { KEYS, SCALES, CHORD_TEMPLATES, INSTRUMENTS } from '../types/music';
 import { RHYTHM_PATTERNS } from '../utils/rhythmPatterns';
 
@@ -18,6 +18,7 @@ interface ControlsProps {
   onTemplateChange: (template: string) => void;
   onRhythmChange: (pattern: string) => void;
   onShuffle: () => void;
+  onRandomize: () => void;
   onPlay: () => void;
   onExport: () => void;
   onExtensionsChange: (value: boolean) => void;
@@ -40,6 +41,7 @@ export default function Controls({
   onTemplateChange,
   onRhythmChange,
   onShuffle,
+  onRandomize,
   onPlay,
   onExport,
   onExtensionsChange,
@@ -55,8 +57,17 @@ export default function Controls({
           className="btn-secondary group relative overflow-hidden"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-          <Shuffle className="w-5 h-5 group-hover:rotate-180 transition-transform duration-500 relative z-10" />
+          <RefreshCw className="w-5 h-5 group-hover:rotate-180 transition-transform duration-500 relative z-10" />
           <span>Generate</span>
+        </button>
+
+        <button
+          onClick={onRandomize}
+          className="btn-ghost group relative overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+          <Shuffle className="w-5 h-5 group-hover:rotate-180 transition-transform duration-500 relative z-10" />
+          <span>Randomize</span>
         </button>
 
         <button
@@ -150,7 +161,7 @@ export default function Controls({
           <div>
             <label className="block text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
               <Shuffle className="w-4 h-4 text-amber-500" />
-              Template
+              Progression
             </label>
             <select
               value={selectedTemplate}

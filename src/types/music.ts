@@ -140,10 +140,18 @@ export const CHORD_TEMPLATES = [
   { name: 'vi-IV-I-V', degrees: [5, 3, 0, 4] },
   { name: 'ii-V-I', degrees: [1, 4, 0] },
   { name: 'I-vi-IV-V', degrees: [0, 5, 3, 4] },
+  { name: 'I-IV-V-I', degrees: [0, 3, 4, 0] },
+  { name: 'I-vi-ii-V', degrees: [0, 5, 1, 4] },
   { name: 'iii-vi-ii-V', degrees: [2, 5, 1, 4] },
   { name: 'I-IV-vi-V', degrees: [0, 3, 5, 4] },
   { name: 'vi-ii-V-I', degrees: [5, 1, 4, 0] },
   { name: 'I-iii-IV-V', degrees: [0, 2, 3, 4] },
+  { name: 'i-VI-VII-i (Minor)', degrees: [0, 5, 6, 0] },
+  { name: 'I-bVII-IV-I', degrees: [0, 6, 3, 0] },
+  { name: 'vi-V-IV-V', degrees: [5, 4, 3, 4] },
+  { name: 'I-V-vi-iii-IV-I-IV-V', degrees: [0, 4, 5, 2, 3, 0, 3, 4] },
+  { name: 'ii-V-I-vi', degrees: [1, 4, 0, 5] },
+  { name: 'I-iii-vi-IV', degrees: [0, 2, 5, 3] },
   { name: 'Random', degrees: [] }
 ];
 
