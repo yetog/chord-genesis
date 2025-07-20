@@ -35,7 +35,7 @@ export default function PlaybackBar({
   return (
     <div className="glass-panel rounded-2xl p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+        <h3 className="font-semibold text-gray-200 flex items-center gap-2">
           <Volume2 className="w-5 h-5 text-amber-500" />
           Playback
         </h3>
@@ -43,23 +43,23 @@ export default function PlaybackBar({
         {/* Tempo Control */}
         {onTempoChange && (
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-slate-600 dark:text-slate-400">BPM:</span>
+            <span className="text-sm font-medium text-gray-400">BPM:</span>
             <input
               type="range"
               min="60"
               max="200"
               value={tempo}
               onChange={(e) => onTempoChange(parseInt(e.target.value))}
-              className="w-20 h-2 bg-slate-200 dark:bg-slate-600 rounded-lg appearance-none cursor-pointer"
+              className="w-20 h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
             />
-            <span className="text-sm font-mono text-slate-700 dark:text-slate-300 w-8">{tempo}</span>
+            <span className="text-sm font-mono text-gray-300 w-8">{tempo}</span>
           </div>
         )}
         
         {/* Volume Control */}
         {onVolumeChange && (
           <div className="flex items-center gap-2">
-            <Volume2 className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+            <Volume2 className="w-4 h-4 text-gray-400" />
             <input
               type="range"
               min="0"
@@ -67,20 +67,20 @@ export default function PlaybackBar({
               step="0.01"
               value={masterVolume}
               onChange={(e) => onVolumeChange(parseFloat(e.target.value))}
-              className="w-20 h-2 bg-slate-200 dark:bg-slate-600 rounded-lg appearance-none cursor-pointer"
+              className="w-20 h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
             />
-            <span className="text-sm font-mono text-slate-700 dark:text-slate-300 w-8">{Math.round(masterVolume * 100)}%</span>
+            <span className="text-sm font-mono text-gray-300 w-8">{Math.round(masterVolume * 100)}%</span>
           </div>
         )}
       </div>
 
       {/* Progress Bar */}
       <div className="mb-4">
-        <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 mb-2">
+        <div className="flex justify-between text-xs text-gray-400 mb-2">
           <span>Chord {currentChordIndex + 1}</span>
           <span>{totalChords} total</span>
         </div>
-        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+        <div className="w-full bg-gray-700 rounded-full h-2">
           <div 
             className="bg-gradient-to-r from-amber-400 to-amber-500 h-2 rounded-full transition-all duration-300"
             style={{ width: `${progress * 100}%` }}
@@ -93,10 +93,10 @@ export default function PlaybackBar({
         {onPrevious && (
           <button
             onClick={onPrevious}
-            className="p-2 rounded-lg bg-white/60 dark:bg-slate-700/60 hover:bg-white/80 dark:hover:bg-slate-600/80 transition-colors duration-200 disabled:opacity-50"
+            className="p-2 rounded-lg bg-gray-700/60 hover:bg-gray-600/80 transition-colors duration-200 disabled:opacity-50"
             disabled={currentChordIndex <= 0}
           >
-            <SkipBack className="w-4 h-4 text-slate-700 dark:text-slate-300" />
+            <SkipBack className="w-4 h-4 text-gray-300" />
           </button>
         )}
 
@@ -118,7 +118,7 @@ export default function PlaybackBar({
             className={`p-2 rounded-lg transition-all duration-200 ${
               isLooping 
                 ? 'bg-amber-500 text-white shadow-md' 
-                : 'bg-white/60 dark:bg-slate-700/60 hover:bg-white/80 dark:hover:bg-slate-600/80 text-slate-700 dark:text-slate-300'
+                : 'bg-gray-700/60 hover:bg-gray-600/80 text-gray-300'
             }`}
             title={isLooping ? 'Disable loop' : 'Enable loop'}
           >
@@ -129,10 +129,10 @@ export default function PlaybackBar({
         {onNext && (
           <button
             onClick={onNext}
-            className="p-2 rounded-lg bg-white/60 dark:bg-slate-700/60 hover:bg-white/80 dark:hover:bg-slate-600/80 transition-colors duration-200 disabled:opacity-50"
+            className="p-2 rounded-lg bg-gray-700/60 hover:bg-gray-600/80 transition-colors duration-200 disabled:opacity-50"
             disabled={currentChordIndex >= totalChords - 1}
           >
-            <SkipForward className="w-4 h-4 text-slate-700 dark:text-slate-300" />
+            <SkipForward className="w-4 h-4 text-gray-300" />
           </button>
         )}
       </div>

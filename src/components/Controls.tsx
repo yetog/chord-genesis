@@ -23,8 +23,6 @@ interface ControlsProps {
   onExtensionsChange: (value: boolean) => void;
   onMelodyChange: (value: boolean) => void;
   onSaveLoad: () => void;
-  isDarkMode: boolean;
-  onThemeToggle: () => void;
 }
 
 export default function Controls({
@@ -47,26 +45,11 @@ export default function Controls({
   onExtensionsChange,
   onMelodyChange,
   onSaveLoad,
-  isDarkMode,
-  onThemeToggle
 }: ControlsProps) {
   return (
     <div className="space-y-8">
       {/* Main Controls */}
       <div className="flex flex-wrap gap-4 justify-center">
-        <button
-          onClick={onThemeToggle}
-          className="btn-theme group relative overflow-hidden"
-          title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-amber-400/20 to-amber-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-          {isDarkMode ? (
-            <Sun className="w-5 h-5 text-amber-500 group-hover:rotate-180 transition-transform duration-500 relative z-10" />
-          ) : (
-            <Moon className="w-5 h-5 text-slate-600 group-hover:rotate-12 transition-transform duration-300 relative z-10" />
-          )}
-        </button>
-
         <button
           onClick={onShuffle}
           className="btn-secondary group relative overflow-hidden"
@@ -121,13 +104,13 @@ export default function Controls({
           <div className="p-2 bg-gradient-to-br from-amber-400/20 to-amber-600/20 rounded-lg">
             <Sliders className="w-5 h-5 text-amber-600" />
           </div>
-          <h3 className="font-semibold text-slate-900 dark:text-slate-100 text-lg">Progression Settings</h3>
+          <h3 className="font-semibold text-gray-200 text-lg">Progression Settings</h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           {/* Key Selection */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
+            <label className="block text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
               <Music className="w-4 h-4 text-amber-500" />
               Key
             </label>
@@ -146,7 +129,7 @@ export default function Controls({
 
           {/* Scale Selection */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
+            <label className="block text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
               <Settings className="w-4 h-4 text-amber-500" />
               Scale
             </label>
@@ -165,7 +148,7 @@ export default function Controls({
 
           {/* Template Selection */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
+            <label className="block text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
               <Shuffle className="w-4 h-4 text-amber-500" />
               Template
             </label>
@@ -185,7 +168,7 @@ export default function Controls({
           {/* Instrument Selection */}
           {/* Rhythm Pattern Selection */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
+            <label className="block text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
               <Settings className="w-4 h-4 text-amber-500" />
               Rhythm
             </label>
@@ -205,7 +188,7 @@ export default function Controls({
 
         {/* Feature Toggles */}
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="flex items-center gap-3 p-4 bg-white/40 dark:bg-slate-800/40 rounded-xl border border-slate-200/50 dark:border-slate-600/50">
+          <div className="flex items-center gap-3 p-4 bg-gray-800/40 rounded-xl border border-gray-600/50">
             <label className="flex items-center cursor-pointer">
               <input
                 type="checkbox"
@@ -222,13 +205,13 @@ export default function Controls({
                   ${addExtensions ? 'transform translate-x-6' : ''}
                 `} />
               </div>
-              <span className="ml-3 text-sm font-semibold text-slate-700 dark:text-slate-300">
+              <span className="ml-3 text-sm font-semibold text-gray-300">
                 Add 7th Extensions
               </span>
             </label>
           </div>
 
-          <div className="flex items-center gap-3 p-4 bg-white/40 dark:bg-slate-800/40 rounded-xl border border-slate-200/50 dark:border-slate-600/50">
+          <div className="flex items-center gap-3 p-4 bg-gray-800/40 rounded-xl border border-gray-600/50">
             <label className="flex items-center cursor-pointer">
               <input
                 type="checkbox"
@@ -238,14 +221,14 @@ export default function Controls({
               />
               <div className={`
                 relative w-12 h-6 rounded-full transition-colors duration-200
-                ${melodyEnabled ? 'bg-gradient-to-r from-blue-400 to-blue-500' : 'bg-slate-300 dark:bg-slate-600'}
+                ${melodyEnabled ? 'bg-gradient-to-r from-blue-400 to-blue-500' : 'bg-gray-600'}
               `}>
                 <div className={`
                   absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 shadow-sm
                   ${melodyEnabled ? 'transform translate-x-6' : ''}
                 `} />
               </div>
-              <span className="ml-3 text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+              <span className="ml-3 text-sm font-semibold text-gray-300 flex items-center gap-2">
                 <Music2 className="w-4 h-4" />
                 Generate Melody
               </span>

@@ -39,7 +39,7 @@ export default function MelodyDisplay({
         <div className="p-2 bg-gradient-to-br from-blue-400/20 to-blue-600/20 rounded-lg">
           <Music2 className="w-5 h-5 text-blue-600" />
         </div>
-        <h3 className="font-semibold text-slate-900 dark:text-slate-100 text-lg">Generated Melody</h3>
+        <h3 className="font-semibold text-gray-200 text-lg">Generated Melody</h3>
         {isPlaying && (
           <div className="flex items-center gap-2 text-blue-600">
             <Volume2 className="w-4 h-4" />
@@ -49,7 +49,7 @@ export default function MelodyDisplay({
       </div>
 
       {/* Melody Visualization */}
-      <div className="relative bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 rounded-xl p-4 mb-4 overflow-x-auto">
+      <div className="relative bg-gradient-to-br from-gray-800 to-gray-700 rounded-xl p-4 mb-4 overflow-x-auto">
         <div className="relative h-32 min-w-full">
           {melody.notes.map((note, index) => {
             const leftPosition = (note.startTime / melody.length) * 100;
@@ -77,7 +77,7 @@ export default function MelodyDisplay({
                 title={`${getNoteName(note.midiNote)} - ${note.duration.toFixed(2)} beats`}
               >
                 {/* Note label on hover */}
-                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-slate-800 dark:bg-slate-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-20">
+                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-20">
                   {getNoteName(note.midiNote)}
                 </div>
               </div>
@@ -90,7 +90,7 @@ export default function MelodyDisplay({
           {[0, 25, 50, 75, 100].map(position => (
             <div
               key={position}
-              className="absolute w-px bg-slate-300/50 dark:bg-slate-500/50"
+              className="absolute w-px bg-gray-500/50"
               style={{ left: `${position}%`, top: 0, bottom: 0 }}
             />
           ))}
@@ -100,22 +100,22 @@ export default function MelodyDisplay({
       {/* Melody Info */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
         <div className="text-center">
-          <div className="font-semibold text-slate-900 dark:text-slate-100">{melody.notes.length}</div>
-          <div className="text-slate-600 dark:text-slate-400">Notes</div>
+          <div className="font-semibold text-gray-200">{melody.notes.length}</div>
+          <div className="text-gray-400">Notes</div>
         </div>
         <div className="text-center">
-          <div className="font-semibold text-slate-900 dark:text-slate-100">{melody.length}</div>
-          <div className="text-slate-600 dark:text-slate-400">Beats</div>
+          <div className="font-semibold text-gray-200">{melody.length}</div>
+          <div className="text-gray-400">Beats</div>
         </div>
         <div className="text-center">
-          <div className="font-semibold text-slate-900 dark:text-slate-100">
+          <div className="font-semibold text-gray-200">
             {getNoteName(Math.min(...melody.notes.map(n => n.midiNote)))} - {getNoteName(Math.max(...melody.notes.map(n => n.midiNote)))}
           </div>
-          <div className="text-slate-600 dark:text-slate-400">Range</div>
+          <div className="text-gray-400">Range</div>
         </div>
         <div className="text-center">
-          <div className="font-semibold text-slate-900 dark:text-slate-100">{melody.key} {melody.scale}</div>
-          <div className="text-slate-600 dark:text-slate-400">Key/Scale</div>
+          <div className="font-semibold text-gray-200">{melody.key} {melody.scale}</div>
+          <div className="text-gray-400">Key/Scale</div>
         </div>
       </div>
     </div>
