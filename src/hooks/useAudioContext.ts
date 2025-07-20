@@ -85,11 +85,11 @@ export function useAudioContext() {
       const noteDuration = pattern.noteDurations[durationIndex] * (duration / 1000);
       
       // Enhanced legato envelope for smoother playback
-      const baseVolume = preview ? 0.03 : 0.08;
+      const baseVolume = preview ? 0.025 : 0.05;
       const volume = baseVolume / Math.max(notesToPlay.length, 1);
       const attackTime = preview ? 0.01 : 0.02;
       const sustainTime = noteDuration - (preview ? 0.1 : 0.3);
-      const releaseTime = preview ? 0.08 : 0.25;
+      const releaseTime = preview ? 0.12 : 0.5;
       
       const startTime = audioContext.currentTime + startDelay;
       
@@ -97,12 +97,12 @@ export function useAudioContext() {
       // Smooth attack
       gainNode.gain.linearRampToValueAtTime(volume, startTime + attackTime);
       // Sustain at slightly reduced volume for legato effect
-      gainNode.gain.linearRampToValueAtTime(volume * 0.9, startTime + sustainTime);
+      gainNode.gain.linearRampToValueAtTime(volume * 0.8, startTime + sustainTime);
       // Gentle release for smooth transitions
-      gainNode.gain.linearRampToValueAtTime(0, startTime + sustainTime + releaseTime + 0.1);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + sustainTime + releaseTime + 0.2);
       
       oscillator.start(startTime);
-      oscillator.stop(startTime + sustainTime + releaseTime + 0.15); // Extended overlap
+      oscillator.stop(startTime + sustainTime + releaseTime + 0.25); // Extended overlap
       
       oscillatorsRef.current.push(oscillator);
     });
