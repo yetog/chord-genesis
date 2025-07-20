@@ -136,3 +136,4 @@ export const INSTRUMENTS: Instrument[] = [
   { name: 'Sine Wave', type: 'sine' },
   { name: 'Warm Pad', type: 'warm-pad' },
   { name: 'Organ', type: 'organ' }
+]
