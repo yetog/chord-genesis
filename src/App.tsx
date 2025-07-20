@@ -6,7 +6,9 @@ import PlaybackBar from './components/PlaybackBar';
 import MelodyDisplay from './components/MelodyDisplay';
 import SaveLoadPanel from './components/SaveLoadPanel';
 import { ChordProgression, CHORD_TEMPLATES, SavedIdea } from './types/music';
+import { KEYS, SCALES } from './types/music';
 import { generateProgression, progressionToMidiData } from './utils/musicTheory';
+import { RHYTHM_PATTERNS } from './utils/rhythmPatterns';
 import { useAudioContext } from './hooks/useAudioContext';
 
 function App() {
@@ -52,6 +54,38 @@ function App() {
     );
     setProgression(newProgression);
   }, [isPlaying, stopPlayback, selectedTemplate, selectedKey, selectedScale, addExtensions, melodyEnabled]);
+
+  const handleRandomize = useCallback(() => {
+    // Stop current playback
+    if (isPlaying) {
+      stopPlayback();
+    }
+    
+    // Get random selections
+    const randomKey = KEYS[Math.floor(Math.random() * KEYS.length)].name;
+    const scaleKeys = Object.keys(SCALES);
+    const randomScale = scaleKeys[Math.floor(Math.random() * scaleKeys.length)];
+    const randomTemplate = CHORD_TEMPLATES[Math.floor(Math.random() * CHORD_TEMPLATES.length)].name;
+    const randomRhythm = RHYTHM_PATTERNS[Math.floor(Math.random() * RHYTHM_PATTERNS.length)].name;
+    
+    // Update state
+    setSelectedKey(randomKey);
+    setSelectedScale(randomScale);
+    setSelectedTemplate(randomTemplate);
+    setSelectedRhythmPattern(randomRhythm);
+    
+    // Generate progression with new random settings
+    const template = CHORD_TEMPLATES.find(t => t.name === randomTemplate);
+    const newProgression = generateProgression(
+      randomKey,
+      randomScale,
+      template?.degrees || [],
+      4,
+      addExtensions,
+      melodyEnabled
+    );
+    setProgression(newProgression);
+  }, [isPlaying, stopPlayback, addExtensions, melodyEnabled]);
 
   const handlePlay = useCallback(() => {
     if (progression) {
@@ -177,6 +211,7 @@ function App() {
             onTemplateChange={setSelectedTemplate}
             onRhythmChange={setSelectedRhythmPattern}
             onShuffle={handleGenerate}
+            onRandomize={handleRandomize}
             onPlay={handlePlay}
             onExport={handleExport}
             onExtensionsChange={setAddExtensions}
@@ -248,7 +283,7 @@ function App() {
                   className="btn-primary text-lg px-10 py-4"
                 >
                   <Sparkles className="w-5 h-5 mr-2" />
-                  Generate Your First Progression
+                  Start Here
                 </button>
               </div>
             </div>
