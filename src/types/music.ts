@@ -125,29 +125,4 @@ export const EXTENDED_CHORD_QUALITIES = [
 // Available extensions for chords
 export const CHORD_EXTENSIONS = [
   '7', 'maj7', '9', 'add9', 'b9', '#9', '11', '#11', 'b13', '13'
-];
-
-// Available instrument types
-export interface Instrument {
-  name: string;
-  type: 'sine' | 'warm-pad' | 'organ';
-  description: string;
-}
-
-export const INSTRUMENTS: Instrument[] = [
-  {
-    name: 'Sine Wave',
-    type: 'sine',
-    description: 'Clean, pure sine wave tone'
-  },
-  {
-    name: 'Warm Pad',
-    type: 'warm-pad',
-    description: 'Rich, layered pad sound with chorus'
-  },
-  {
-    name: 'Organ',
-    type: 'organ',
-    description: 'Classic organ with harmonic drawbars'
-  }
-];
+]
