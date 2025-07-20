@@ -125,3 +125,4 @@ export const EXTENDED_CHORD_QUALITIES = [
 // Available extensions for chords
 export const CHORD_EXTENSIONS = [
   '7', 'maj7', '9', 'add9', 'b9', '#9', '11', '#11', 'b13', '13'
+]
