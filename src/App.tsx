@@ -141,9 +141,9 @@ function App() {
   return (
     <div className="min-h-screen theme-transition" data-theme={isDarkMode ? 'dark' : 'light'}>
       {/* Header */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 animate-floating-bg" style={{backgroundSize: '400% 400%'}}>
         <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-amber-600/5 dark:from-amber-400/15 dark:to-amber-500/10" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(245,158,11,0.1),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(245,158,11,0.15),transparent_50%)] dark:bg-[radial-gradient(circle_at_30%_20%,rgba(245,158,11,0.2),transparent_50%)]" />
         <div className="relative container mx-auto px-4 py-16">
           <div className="text-center">
             <div className="inline-flex items-center gap-4 mb-6">

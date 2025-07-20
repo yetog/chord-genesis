@@ -56,32 +56,35 @@ export default function Controls({
       <div className="flex flex-wrap gap-4 justify-center">
         <button
           onClick={onThemeToggle}
-          className="btn-theme group"
+          className="btn-theme group relative overflow-hidden"
           title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
         >
+          <div className="absolute inset-0 bg-gradient-to-r from-amber-400/20 to-amber-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
           {isDarkMode ? (
-            <Sun className="w-5 h-5 text-amber-500 group-hover:rotate-180 transition-transform duration-500" />
+            <Sun className="w-5 h-5 text-amber-500 group-hover:rotate-180 transition-transform duration-500 relative z-10" />
           ) : (
-            <Moon className="w-5 h-5 text-slate-600 group-hover:rotate-12 transition-transform duration-300" />
+            <Moon className="w-5 h-5 text-slate-600 group-hover:rotate-12 transition-transform duration-300 relative z-10" />
           )}
         </button>
 
         <button
           onClick={onShuffle}
-          className="btn-secondary group"
+          className="btn-secondary group relative overflow-hidden"
         >
-          <Shuffle className="w-5 h-5 group-hover:rotate-180 transition-transform duration-500" />
+          <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+          <Shuffle className="w-5 h-5 group-hover:rotate-180 transition-transform duration-500 relative z-10" />
           <span>Generate</span>
         </button>
 
         <button
           onClick={onPlay}
-          className="btn-primary group"
+          className="btn-primary group relative overflow-hidden"
         >
+          <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
           {isPlaying ? (
-            <Pause className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
+            <Pause className="w-5 h-5 group-hover:scale-110 transition-transform duration-200 relative z-10" />
           ) : (
-            <Play className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
+            <Play className="w-5 h-5 group-hover:scale-110 transition-transform duration-200 relative z-10" />
           )}
           <span>{isPlaying ? 'Pause' : 'Play'}</span>
         </button>

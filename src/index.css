@@ -75,43 +75,43 @@
   
   .btn-primary {
     @apply px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl font-medium;
-    @apply hover:from-amber-600 hover:to-amber-700 transition-all duration-300;
-    @apply shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95;
+    @apply hover:from-amber-600 hover:to-amber-700 transition-all duration-200;
+    @apply shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 hover:scale-105 active:translate-y-0 active:scale-100;
     @apply focus:outline-none focus:ring-2 focus:ring-amber-500/50;
   }
   
   .btn-secondary {
     @apply px-6 py-3 bg-gradient-to-r from-slate-900 to-slate-800 dark:from-slate-700 dark:to-slate-600 text-white rounded-xl font-medium;
-    @apply hover:from-slate-800 hover:to-slate-700 dark:hover:from-slate-600 dark:hover:to-slate-500 transition-all duration-300;
-    @apply shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95;
+    @apply hover:from-slate-800 hover:to-slate-700 dark:hover:from-slate-600 dark:hover:to-slate-500 transition-all duration-200;
+    @apply shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 hover:scale-105 active:translate-y-0 active:scale-100;
     @apply focus:outline-none focus:ring-2 focus:ring-slate-500/50;
   }
   
   .btn-ghost {
     @apply px-6 py-3 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm text-slate-700 dark:text-slate-300 rounded-xl font-medium;
-    @apply hover:bg-white/80 dark:hover:bg-slate-700/80 transition-all duration-300 border border-slate-200/50 dark:border-slate-600/50;
-    @apply shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95;
+    @apply hover:bg-white/80 dark:hover:bg-slate-700/80 transition-all duration-200 border border-slate-200/50 dark:border-slate-600/50;
+    @apply shadow-md hover:shadow-lg transform hover:-translate-y-0.5 active:translate-y-0;
     @apply focus:outline-none focus:ring-2 focus:ring-slate-300/50;
   }
   
   .btn-theme {
     @apply p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm;
-    @apply hover:bg-white/80 dark:hover:bg-slate-700/80 transition-all duration-300;
+    @apply hover:bg-white/80 dark:hover:bg-slate-700/80 transition-all duration-200;
     @apply border border-slate-200/50 dark:border-slate-600/50;
-    @apply shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95;
+    @apply shadow-md hover:shadow-lg transform hover:-translate-y-0.5 active:translate-y-0;
     @apply focus:outline-none focus:ring-2 focus:ring-amber-500/50;
   }
   
   .chord-card {
     @apply glass-panel rounded-2xl p-6 min-h-[140px] cursor-pointer;
-    @apply transition-all duration-300 ease-out relative overflow-hidden;
-    @apply hover:scale-102 hover:shadow-2xl;
+    @apply transition-all duration-200 ease-out relative overflow-hidden;
+    @apply hover:scale-102 hover:shadow-2xl hover:-translate-y-1;
   }
   
   .chord-card.playing {
-    @apply scale-105 shadow-2xl;
-    @apply ring-2 ring-amber-400/60 ring-offset-2 ring-offset-slate-50;
-    animation: pulse-glow 2s ease-in-out infinite;
+    @apply scale-[0.98] shadow-2xl -translate-y-0.5;
+    @apply ring-2 ring-amber-400/60 ring-offset-2 ring-offset-slate-50 dark:ring-offset-slate-900;
+    animation: chord-press 0.15s ease-out, pulse-glow 2s ease-in-out infinite 0.15s;
   }
   
   .loading-spinner {
@@ -125,8 +125,8 @@
   
   .input-field {
     @apply w-full px-4 py-3 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm;
-    @apply border border-slate-200 dark:border-slate-600 rounded-xl;
-    @apply focus:ring-2 focus:ring-amber-500 focus:border-transparent;
+    @apply border border-slate-200 dark:border-slate-600 rounded-xl transition-all duration-200;
+    @apply focus:ring-2 focus:ring-amber-500/70 focus:border-amber-400 focus:shadow-lg;
     @apply transition-all duration-200 font-medium;
     @apply text-slate-900 dark:text-slate-100;
     @apply placeholder-slate-500 dark:placeholder-slate-400;
@@ -134,8 +134,8 @@
   
   .select-field {
     @apply w-full px-4 py-3 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm;
-    @apply border border-slate-200 dark:border-slate-600 rounded-xl;
-    @apply focus:ring-2 focus:ring-amber-500 focus:border-transparent;
+    @apply border border-slate-200 dark:border-slate-600 rounded-xl transition-all duration-200;
+    @apply focus:ring-2 focus:ring-amber-500/70 focus:border-amber-400 focus:shadow-lg;
     @apply transition-all duration-200 font-medium;
     @apply text-slate-900 dark:text-slate-100;
   }
@@ -165,10 +165,28 @@
 
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(245, 158, 11, 0.3), 0 8px 32px rgba(15, 23, 42, 0.1);
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.4), 0 8px 32px rgba(15, 23, 42, 0.15);
   }
   50% {
-    box-shadow: 0 0 30px rgba(245, 158, 11, 0.5), 0 12px 40px rgba(15, 23, 42, 0.15);
+    box-shadow: 0 0 40px rgba(245, 158, 11, 0.6), 0 12px 40px rgba(15, 23, 42, 0.2);
+  }
+}
+
+@keyframes chord-press {
+  0% {
+    transform: scale(1.02) translateY(-4px);
+  }
+  100% {
+    transform: scale(0.98) translateY(-2px);
+  }
+}
+
+@keyframes floating-bg {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
   }
 }
 
@@ -197,6 +215,10 @@
 
 .animate-slide-up {
   animation: slide-up 0.5s ease-out;
+}
+
+.animate-floating-bg {
+  animation: floating-bg 20s ease-in-out infinite;
 }
 
 /* Custom scrollbar */
