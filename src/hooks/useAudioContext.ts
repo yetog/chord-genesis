@@ -4,7 +4,7 @@ import { RHYTHM_PATTERNS } from '../utils/rhythmPatterns';
 
 export function useAudioContext() {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isLooping, setIsLooping] = useState(false);
+  const [isLooping, setIsLooping] = useState(true);
   const [currentChordIndex, setCurrentChordIndex] = useState(-1);
   const [tempo, setTempo] = useState(120);
   const [masterVolume, setMasterVolume] = useState(0.8); // 80% default volume
