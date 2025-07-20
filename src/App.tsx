@@ -231,8 +231,9 @@ function App() {
                 <div className="relative w-32 h-32 mx-auto mb-8">
                   <div className="absolute inset-0 bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900/30 dark:to-amber-800/30 rounded-full animate-pulse" />
                   <div className="absolute inset-2 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 rounded-full flex items-center justify-center">
-                  <div className="absolute inset-2 bg-gradient-to-br from-gray-800 to-gray-900 rounded-full flex items-center justify-center">
-                    <Music className="w-16 h-16 text-gray-500" />
+                    <div className="absolute inset-2 bg-gradient-to-br from-gray-800 to-gray-900 rounded-full flex items-center justify-center">
+                      <Music className="w-16 h-16 text-gray-500" />
+                    </div>
                   </div>
                 </div>
                 <h3 className="text-2xl font-bold text-gray-200 mb-4">
