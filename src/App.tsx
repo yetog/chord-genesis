@@ -3,7 +3,7 @@ import { Music, Sparkles } from 'lucide-react';
 import Controls from './components/Controls';
 import ChordCard from './components/ChordCard';
 import PlaybackBar from './components/PlaybackBar';
-import { ChordProgression, CHORD_TEMPLATES, INSTRUMENTS } from './types/music';
+import { ChordProgression, CHORD_TEMPLATES } from './types/music';
 import { generateProgression, progressionToMidiData } from './utils/musicTheory';
 import { useAudioContext } from './hooks/useAudioContext';
 
@@ -53,6 +53,7 @@ function App() {
     if (progression) {
       playProgression(progression.chords, selectedRhythmPattern, selectedInstrument);
     }
+  }, [progression, playProgression, selectedRhythmPattern, selectedInstrument]);
 
   const handleExport = useCallback(async () => {
     if (!progression) return;
@@ -145,6 +146,7 @@ function App() {
             selectedScale={selectedScale}
             selectedTemplate={selectedTemplate}
             selectedRhythmPattern={selectedRhythmPattern}
+            selectedInstrument={selectedInstrument}
             isPlaying={isPlaying}
             addExtensions={addExtensions}
             isExporting={isExporting}
