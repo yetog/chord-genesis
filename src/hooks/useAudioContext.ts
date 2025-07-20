@@ -8,6 +8,7 @@ export function useAudioContext() {
   const [currentChordIndex, setCurrentChordIndex] = useState(-1);
   const [tempo, setTempo] = useState(120);
   const [masterVolume, setMasterVolume] = useState(0.8); // 80% default volume
+  const audioContextRef = useRef<AudioContext | null>(null);
   const masterGainRef = useRef<GainNode | null>(null);
   const compressorRef = useRef<DynamicsCompressorNode | null>(null);
   const oscillatorsRef = useRef<OscillatorNode[]>([]);
