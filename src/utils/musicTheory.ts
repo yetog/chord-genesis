@@ -1,4 +1,5 @@
 import { SCALES, KEYS, Chord, ChordProgression } from '../types/music';
+import { Melody, MelodyNote } from '../types/music';
 
 const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
@@ -148,12 +149,98 @@ export function generateChordMidiNotes(
   return midiNotes.sort((a, b) => a - b);
 }
 
+export function generateMelody(
+  key: string,
+  scale: string,
+  chords: Chord[],
+  length: number = 16 // beats
+): Melody {
+  const keyValue = KEYS.find(k => k.name === key)?.value || 0;
+  const scaleData = SCALES[scale];
+  
+  if (!scaleData) {
+    throw new Error(`Scale "${scale}" not found`);
+  }
+
+  const scaleNotes = scaleData.intervals.map(interval => 
+    (keyValue + interval) % 12 + 60 // Start at middle C octave
+  );
+
+  const notes: MelodyNote[] = [];
+  const beatsPerChord = length / chords.length;
+  
+  let currentTime = 0;
+  let lastNote = scaleNotes[0]; // Start on tonic
+
+  chords.forEach((chord, chordIndex) => {
+    const chordTones = chord.midiNotes.map(note => note % 12);
+    const chordEndTime = currentTime + beatsPerChord;
+    
+    // Generate 2-4 notes per chord
+    const notesInChord = Math.floor(Math.random() * 3) + 2;
+    const noteSpacing = beatsPerChord / notesInChord;
+    
+    for (let i = 0; i < notesInChord; i++) {
+      let nextNote: number;
+      
+      if (Math.random() > 0.3) {
+        // 70% chance to use chord tone
+        const chordTone = chordTones[Math.floor(Math.random() * chordTones.length)];
+        nextNote = chordTone + 60; // Middle C octave
+      } else {
+        // 30% chance to use scale tone
+        nextNote = scaleNotes[Math.floor(Math.random() * scaleNotes.length)];
+      }
+      
+      // Keep melody in reasonable range
+      while (Math.abs(nextNote - lastNote) > 12) {
+        if (nextNote > lastNote) {
+          nextNote -= 12;
+        } else {
+          nextNote += 12;
+        }
+      }
+      
+      // Prefer stepwise motion
+      if (Math.abs(nextNote - lastNote) > 7 && Math.random() > 0.3) {
+        const direction = nextNote > lastNote ? -1 : 1;
+        const stepwiseNote = lastNote + (direction * (Math.floor(Math.random() * 3) + 1));
+        if (scaleNotes.includes(stepwiseNote % 12 + 60) || chordTones.includes(stepwiseNote % 12)) {
+          nextNote = stepwiseNote;
+        }
+      }
+      
+      const duration = noteSpacing * (0.7 + Math.random() * 0.6); // Vary duration
+      const velocity = 70 + Math.floor(Math.random() * 30); // Vary velocity
+      
+      notes.push({
+        midiNote: nextNote,
+        duration,
+        startTime: currentTime + (i * noteSpacing),
+        velocity
+      });
+      
+      lastNote = nextNote;
+    }
+    
+    currentTime = chordEndTime;
+  });
+
+  return {
+    notes,
+    key,
+    scale,
+    length
+  };
+}
+
 export function generateProgression(
   key: string,
   scale: string,
   template: number[],
   length: number = 4,
-  addExtensions: boolean = false
+  addExtensions: boolean = false,
+  generateMelodyFlag: boolean = false
 ): ChordProgression {
   const keyValue = KEYS.find(k => k.name === key)?.value || 0;
   const scaleData = SCALES[scale];
@@ -204,12 +291,18 @@ export function generateProgression(
     };
   });
 
-  return {
+  const progression: ChordProgression = {
     chords,
     key,
     scale,
     tempo: 120
   };
+
+  if (generateMelodyFlag) {
+    progression.melody = generateMelody(key, scale, chords, 16);
+  }
+
+  return progression;
 }
 
 export function progressionToMidiData(progression: ChordProgression): Uint8Array {
@@ -218,52 +311,107 @@ export function progressionToMidiData(progression: ChordProgression): Uint8Array
     0x4D, 0x54, 0x68, 0x64, // "MThd"
     0x00, 0x00, 0x00, 0x06, // Header length
     0x00, 0x00, // Format type 0
-    0x00, 0x01, // Number of tracks
+    0x00, progression.melody ? 0x02 : 0x01, // Number of tracks
     0x00, 0x60  // Ticks per quarter note (96)
   ]);
 
-  const trackHeader = new Uint8Array([
+  const chordTrackHeader = new Uint8Array([
     0x4D, 0x54, 0x72, 0x6B, // "MTrk"
     0x00, 0x00, 0x00, 0x00  // Track length (will be calculated)
   ]);
 
-  const events: number[] = [];
+  const chordEvents: number[] = [];
 
   progression.chords.forEach((chord, index) => {
     // Note on events
     chord.midiNotes.forEach(note => {
-      events.push(0x00); // Delta time
-      events.push(0x90); // Note on, channel 0
-      events.push(note);
-      events.push(0x64); // Velocity
+      chordEvents.push(0x00); // Delta time
+      chordEvents.push(0x90); // Note on, channel 0
+      chordEvents.push(note);
+      chordEvents.push(0x64); // Velocity
     });
 
     // Note off events (after 1 beat = 96 ticks)
     chord.midiNotes.forEach((note, noteIndex) => {
-      events.push(noteIndex === 0 ? 0x60 : 0x00); // Delta time
-      events.push(0x80); // Note off, channel 0
-      events.push(note);
-      events.push(0x40); // Velocity
+      chordEvents.push(noteIndex === 0 ? 0x60 : 0x00); // Delta time
+      chordEvents.push(0x80); // Note off, channel 0
+      chordEvents.push(note);
+      chordEvents.push(0x40); // Velocity
     });
   });
 
   // End of track
-  events.push(0x00, 0xFF, 0x2F, 0x00);
+  chordEvents.push(0x00, 0xFF, 0x2F, 0x00);
 
-  const trackData = new Uint8Array(events);
-  const trackLength = trackData.length;
+  const chordTrackData = new Uint8Array(chordEvents);
+  const chordTrackLength = chordTrackData.length;
   
   // Update track length in header
-  trackHeader[7] = trackLength & 0xFF;
-  trackHeader[6] = (trackLength >> 8) & 0xFF;
-  trackHeader[5] = (trackLength >> 16) & 0xFF;
-  trackHeader[4] = (trackLength >> 24) & 0xFF;
+  chordTrackHeader[7] = chordTrackLength & 0xFF;
+  chordTrackHeader[6] = (chordTrackLength >> 8) & 0xFF;
+  chordTrackHeader[5] = (chordTrackLength >> 16) & 0xFF;
+  chordTrackHeader[4] = (chordTrackLength >> 24) & 0xFF;
+
+  let totalLength = header.length + chordTrackHeader.length + chordTrackData.length;
+  let melodyTrackHeader: Uint8Array | null = null;
+  let melodyTrackData: Uint8Array | null = null;
+
+  // Add melody track if present
+  if (progression.melody) {
+    melodyTrackHeader = new Uint8Array([
+      0x4D, 0x54, 0x72, 0x6B, // "MTrk"
+      0x00, 0x00, 0x00, 0x00  // Track length (will be calculated)
+    ]);
+
+    const melodyEvents: number[] = [];
+    let lastTime = 0;
+
+    progression.melody.notes.forEach(note => {
+      const startTicks = Math.floor(note.startTime * 96); // Convert beats to ticks
+      const durationTicks = Math.floor(note.duration * 96);
+      const deltaTime = startTicks - lastTime;
+
+      // Note on
+      melodyEvents.push(deltaTime & 0x7F); // Delta time (simplified)
+      melodyEvents.push(0x91); // Note on, channel 1
+      melodyEvents.push(note.midiNote);
+      melodyEvents.push(note.velocity);
+
+      // Note off
+      melodyEvents.push(durationTicks & 0x7F); // Delta time
+      melodyEvents.push(0x81); // Note off, channel 1
+      melodyEvents.push(note.midiNote);
+      melodyEvents.push(0x40); // Velocity
+
+      lastTime = startTicks + durationTicks;
+    });
+
+    // End of track
+    melodyEvents.push(0x00, 0xFF, 0x2F, 0x00);
+
+    melodyTrackData = new Uint8Array(melodyEvents);
+    const melodyTrackLength = melodyTrackData.length;
+
+    // Update melody track length in header
+    melodyTrackHeader[7] = melodyTrackLength & 0xFF;
+    melodyTrackHeader[6] = (melodyTrackLength >> 8) & 0xFF;
+    melodyTrackHeader[5] = (melodyTrackLength >> 16) & 0xFF;
+    melodyTrackHeader[4] = (melodyTrackLength >> 24) & 0xFF;
+
+    totalLength += melodyTrackHeader.length + melodyTrackData.length;
+  }
 
   // Combine all parts
-  const midiFile = new Uint8Array(header.length + trackHeader.length + trackData.length);
+  const midiFile = new Uint8Array(totalLength);
   midiFile.set(header, 0);
-  midiFile.set(trackHeader, header.length);
-  midiFile.set(trackData, header.length + trackHeader.length);
+  midiFile.set(chordTrackHeader, header.length);
+  midiFile.set(chordTrackData, header.length + chordTrackHeader.length);
+
+  if (melodyTrackHeader && melodyTrackData) {
+    const melodyOffset = header.length + chordTrackHeader.length + chordTrackData.length;
+    midiFile.set(melodyTrackHeader, melodyOffset);
+    midiFile.set(melodyTrackData, melodyOffset + melodyTrackHeader.length);
+  }
 
   return midiFile;
 }

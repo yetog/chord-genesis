@@ -1,9 +1,11 @@
 import React, { useState, useCallback } from 'react';
-import { Music, Sparkles } from 'lucide-react';
+import { Music, Sparkles, FolderOpen } from 'lucide-react';
 import Controls from './components/Controls';
 import ChordCard from './components/ChordCard';
 import PlaybackBar from './components/PlaybackBar';
-import { ChordProgression, CHORD_TEMPLATES, INSTRUMENTS } from './types/music';
+import MelodyDisplay from './components/MelodyDisplay';
+import SaveLoadPanel from './components/SaveLoadPanel';
+import { ChordProgression, CHORD_TEMPLATES, SavedIdea } from './types/music';
 import { generateProgression, progressionToMidiData } from './utils/musicTheory';
 import { useAudioContext } from './hooks/useAudioContext';
 
@@ -14,6 +16,8 @@ function App() {
   const [selectedTemplate, setSelectedTemplate] = useState('Random');
   const [selectedRhythmPattern, setSelectedRhythmPattern] = useState('Block Chord');
   const [addExtensions, setAddExtensions] = useState(false);
+  const [melodyEnabled, setMelodyEnabled] = useState(false);
+  const [showSaveLoad, setShowSaveLoad] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [exportSuccess, setExportSuccess] = useState(false);
 
@@ -43,10 +47,11 @@ function App() {
       selectedScale,
       template?.degrees || [],
       4,
-      addExtensions
+      addExtensions,
+      melodyEnabled
     );
     setProgression(newProgression);
-  }, [isPlaying, stopPlayback, selectedTemplate, selectedKey, selectedScale, addExtensions]);
+  }, [isPlaying, stopPlayback, selectedTemplate, selectedKey, selectedScale, addExtensions, melodyEnabled]);
 
   const handlePlay = useCallback(() => {
     if (progression) {
@@ -81,6 +86,23 @@ function App() {
     // Reset success state after 3 seconds
     setTimeout(() => setExportSuccess(false), 3000);
   }, [progression, selectedKey, selectedScale]);
+
+  const handleSaveLoad = useCallback(() => {
+    setShowSaveLoad(true);
+  }, []);
+
+  const handleLoadIdea = useCallback((idea: SavedIdea) => {
+    // Load progression
+    setProgression(idea.progression);
+    
+    // Load settings
+    setSelectedKey(idea.settings.selectedKey);
+    setSelectedScale(idea.settings.selectedScale);
+    setSelectedTemplate(idea.settings.selectedTemplate);
+    setSelectedRhythmPattern(idea.settings.selectedRhythmPattern);
+    setAddExtensions(idea.settings.addExtensions);
+    setMelodyEnabled(idea.settings.melodyEnabled);
+  }, []);
 
   const handleChordHover = useCallback((chord: any) => {
     if (!isPlaying) {
@@ -147,6 +169,7 @@ function App() {
             selectedRhythmPattern={selectedRhythmPattern}
             isPlaying={isPlaying}
             addExtensions={addExtensions}
+            melodyEnabled={melodyEnabled}
             isExporting={isExporting}
             exportSuccess={exportSuccess}
             onKeyChange={setSelectedKey}
@@ -157,6 +180,8 @@ function App() {
             onPlay={handlePlay}
             onExport={handleExport}
             onExtensionsChange={setAddExtensions}
+            onMelodyChange={setMelodyEnabled}
+            onSaveLoad={handleSaveLoad}
           />
 
           {/* Chord Progression Display */}
@@ -228,6 +253,25 @@ function App() {
           )}
         </div>
       </div>
+
+      {/* Save/Load Panel */}
+      {showSaveLoad && (
+        <SaveLoadPanel
+          currentIdea={progression ? {
+            progression,
+            settings: {
+              selectedKey,
+              selectedScale,
+              selectedTemplate,
+              selectedRhythmPattern,
+              addExtensions,
+              melodyEnabled
+            }
+          } : null}
+          onLoad={handleLoadIdea}
+          onClose={() => setShowSaveLoad(false)}
+        />
+      )}
 
       {/* Footer */}
       <footer className="border-t border-slate-200/50 glass-panel">

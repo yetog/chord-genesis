@@ -6,11 +6,44 @@ export interface Chord {
   midiNotes: number[];
 }
 
+export interface MelodyNote {
+  midiNote: number;
+  duration: number; // In beats
+  startTime: number; // In beats from start
+  velocity: number;
+}
+
+export interface Melody {
+  notes: MelodyNote[];
+  key: string;
+  scale: string;
+  length: number; // In beats
+}
+
 export interface ChordProgression {
   chords: Chord[];
   key: string;
   scale: string;
   tempo: number;
+  melody?: Melody;
+}
+
+export interface SavedIdea {
+  id: string;
+  name: string;
+  folder?: string;
+  tags: string[];
+  progression: ChordProgression;
+  settings: {
+    selectedKey: string;
+    selectedScale: string;
+    selectedTemplate: string;
+    selectedRhythmPattern: string;
+    addExtensions: boolean;
+    melodyEnabled: boolean;
+  };
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Scale {

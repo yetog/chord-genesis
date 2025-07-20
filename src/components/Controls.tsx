@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shuffle, Download, Play, Pause, Settings, Music, Sliders } from 'lucide-react';
+import { Shuffle, Download, Play, Pause, Settings, Music, Sliders, FolderOpen, Music2 } from 'lucide-react';
 import { KEYS, SCALES, CHORD_TEMPLATES, INSTRUMENTS } from '../types/music';
 import { RHYTHM_PATTERNS } from '../utils/rhythmPatterns';
 
@@ -10,6 +10,7 @@ interface ControlsProps {
   selectedRhythmPattern: string;
   isPlaying: boolean;
   addExtensions: boolean;
+  melodyEnabled: boolean;
   isExporting?: boolean;
   exportSuccess?: boolean;
   onKeyChange: (key: string) => void;
@@ -20,6 +21,8 @@ interface ControlsProps {
   onPlay: () => void;
   onExport: () => void;
   onExtensionsChange: (value: boolean) => void;
+  onMelodyChange: (value: boolean) => void;
+  onSaveLoad: () => void;
 }
 
 export default function Controls({
@@ -29,6 +32,7 @@ export default function Controls({
   selectedRhythmPattern,
   isPlaying,
   addExtensions,
+  melodyEnabled,
   isExporting = false,
   exportSuccess = false,
   onKeyChange,
@@ -38,7 +42,9 @@ export default function Controls({
   onShuffle,
   onPlay,
   onExport,
-  onExtensionsChange
+  onExtensionsChange,
+  onMelodyChange,
+  onSaveLoad
 }: ControlsProps) {
   return (
     <div className="space-y-8">
@@ -79,6 +85,14 @@ export default function Controls({
           <span>
             {isExporting ? 'Exporting...' : exportSuccess ? 'Exported!' : 'Export MIDI'}
           </span>
+        </button>
+
+        <button
+          onClick={onSaveLoad}
+          className="btn-ghost group"
+        >
+          <FolderOpen className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
+          <span>Save/Load</span>
         </button>
       </div>
 
@@ -170,28 +184,54 @@ export default function Controls({
           </div>
         </div>
 
-        {/* Extensions Toggle */}
-        <div className="mt-6 flex items-center gap-3 p-4 bg-white/40 rounded-xl border border-slate-200/50">
-          <label className="flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={addExtensions}
-              onChange={(e) => onExtensionsChange(e.target.checked)}
-              className="sr-only"
-            />
-            <div className={`
-              relative w-12 h-6 rounded-full transition-colors duration-200
-              ${addExtensions ? 'bg-gradient-to-r from-amber-400 to-amber-500' : 'bg-slate-300'}
-            `}>
+        {/* Feature Toggles */}
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex items-center gap-3 p-4 bg-white/40 rounded-xl border border-slate-200/50">
+            <label className="flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={addExtensions}
+                onChange={(e) => onExtensionsChange(e.target.checked)}
+                className="sr-only"
+              />
               <div className={`
-                absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 shadow-sm
-                ${addExtensions ? 'transform translate-x-6' : ''}
-              `} />
-            </div>
-            <span className="ml-3 text-sm font-semibold text-slate-700">
-              Add 7th Extensions
-            </span>
-          </label>
+                relative w-12 h-6 rounded-full transition-colors duration-200
+                ${addExtensions ? 'bg-gradient-to-r from-amber-400 to-amber-500' : 'bg-slate-300'}
+              `}>
+                <div className={`
+                  absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 shadow-sm
+                  ${addExtensions ? 'transform translate-x-6' : ''}
+                `} />
+              </div>
+              <span className="ml-3 text-sm font-semibold text-slate-700">
+                Add 7th Extensions
+              </span>
+            </label>
+          </div>
+
+          <div className="flex items-center gap-3 p-4 bg-white/40 rounded-xl border border-slate-200/50">
+            <label className="flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={melodyEnabled}
+                onChange={(e) => onMelodyChange(e.target.checked)}
+                className="sr-only"
+              />
+              <div className={`
+                relative w-12 h-6 rounded-full transition-colors duration-200
+                ${melodyEnabled ? 'bg-gradient-to-r from-blue-400 to-blue-500' : 'bg-slate-300'}
+              `}>
+                <div className={`
+                  absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 shadow-sm
+                  ${melodyEnabled ? 'transform translate-x-6' : ''}
+                `} />
+              </div>
+              <span className="ml-3 text-sm font-semibold text-slate-700 flex items-center gap-2">
+                <Music2 className="w-4 h-4" />
+                Generate Melody
+              </span>
+            </label>
+          </div>
         </div>
       </div>
     </div>
