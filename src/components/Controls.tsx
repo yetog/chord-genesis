@@ -46,7 +46,7 @@ export default function Controls({
   onExport,
   onExtensionsChange,
   onMelodyChange,
-  onSaveLoad
+  onSaveLoad,
   isDarkMode,
   onThemeToggle
 }: ControlsProps) {
