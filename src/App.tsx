@@ -25,10 +25,16 @@ function App() {
     setTempo, 
     toggleLoop,
     playProgression, 
-    playChordPreview 
+    playChordPreview,
+    stopPlayback
   } = useAudioContext();
 
   const handleGenerate = useCallback(() => {
+    // Stop current playback but preserve loop state
+    if (isPlaying) {
+      stopPlayback();
+    }
+    
     const template = CHORD_TEMPLATES.find(t => t.name === selectedTemplate);
     const newProgression = generateProgression(
       selectedKey,
@@ -38,8 +44,7 @@ function App() {
       addExtensions
     );
     setProgression(newProgression);
-  }, [selectedKey, selectedScale, selectedTemplate, addExtensions]);
-
+  }, [selectedKey, selectedScale, selectedTemplate, addExtensions, isPlaying, stopPlayback]);
   const handlePlay = useCallback(() => {
     if (progression) {
       playProgression(progression.chords, selectedRhythmPattern);

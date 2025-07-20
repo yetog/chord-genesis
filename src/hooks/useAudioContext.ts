@@ -97,12 +97,12 @@ export function useAudioContext() {
       // Smooth attack
       gainNode.gain.linearRampToValueAtTime(volume, startTime + attackTime);
       // Sustain at slightly reduced volume for legato effect
-      gainNode.gain.linearRampToValueAtTime(volume * 0.85, startTime + sustainTime);
+      gainNode.gain.linearRampToValueAtTime(volume * 0.9, startTime + sustainTime);
       // Gentle release for smooth transitions
-      gainNode.gain.linearRampToValueAtTime(0, startTime + sustainTime + releaseTime);
+      gainNode.gain.linearRampToValueAtTime(0, startTime + sustainTime + releaseTime + 0.1);
       
       oscillator.start(startTime);
-      oscillator.stop(startTime + sustainTime + releaseTime);
+      oscillator.stop(startTime + sustainTime + releaseTime + 0.15); // Extended overlap
       
       oscillatorsRef.current.push(oscillator);
     });
@@ -113,7 +113,7 @@ export function useAudioContext() {
   }, []);
 
   const playProgression = useCallback(async (chords: Chord[], rhythmPattern: string = 'Block Chord') => {
-    const chordDuration = (60 / tempo) * 1000 * 2; // 2 beats per chord
+    const chordDuration = (60 / tempo) * 1000 * 1.8; // Slightly faster for smoother flow
     
     if (isPlaying) {
       setIsPlaying(false);
@@ -143,11 +143,11 @@ export function useAudioContext() {
       }
 
       setCurrentChordIndex(index);
-      playChord(chords[index], chordDuration * 0.9, false, rhythmPattern); // Slightly overlap for legato
+      playChord(chords[index], chordDuration * 1.1, false, rhythmPattern); // Extended duration for smooth overlap
 
       timeoutRef.current = setTimeout(() => {
         playNextChord(index + 1);
-      }, chordDuration);
+      }, chordDuration * 0.85); // Shorter gap between chord changes
     };
 
     playNextChord(0);
