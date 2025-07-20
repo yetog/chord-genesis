@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Music, Sparkles, FolderOpen } from 'lucide-react';
 import Controls from './components/Controls';
 import ChordCard from './components/ChordCard';
@@ -20,6 +20,7 @@ function App() {
   const [showSaveLoad, setShowSaveLoad] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [exportSuccess, setExportSuccess] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const { 
     isPlaying, 
@@ -34,6 +35,33 @@ function App() {
     playChordPreview,
     stopPlayback
   } = useAudioContext();
+
+  // Load theme preference from localStorage on mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('chord-genesis-theme');
+    if (savedTheme === 'dark') {
+      setIsDarkMode(true);
+    } else if (savedTheme === null) {
+      // Default to dark mode if no preference is saved
+      setIsDarkMode(true);
+      localStorage.setItem('chord-genesis-theme', 'dark');
+    }
+  }, []);
+
+  // Apply theme to document
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+  }, [isDarkMode]);
+
+  const toggleTheme = useCallback(() => {
+    const newTheme = !isDarkMode;
+    setIsDarkMode(newTheme);
+    localStorage.setItem('chord-genesis-theme', newTheme ? 'dark' : 'light');
+  }, [isDarkMode]);
 
   const handleGenerate = useCallback(() => {
     // Stop current playback but preserve loop state
@@ -111,10 +139,10 @@ function App() {
   }, [isPlaying, playChordPreview]);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen theme-transition" data-theme={isDarkMode ? 'dark' : 'light'}>
       {/* Header */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-amber-600/5" />
+      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-amber-600/5 dark:from-amber-400/15 dark:to-amber-500/10" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(245,158,11,0.1),transparent_50%)]" />
         <div className="relative container mx-auto px-4 py-16">
           <div className="text-center">
@@ -131,26 +159,26 @@ function App() {
                 Chord Genesis
               </h1>
             </div>
-            <p className="text-slate-300 text-xl max-w-3xl mx-auto leading-relaxed mb-8">
+            <p className="text-slate-300 dark:text-slate-200 text-xl max-w-3xl mx-auto leading-relaxed mb-8">
               Generate beautiful chord progressions with intelligent music theory.
               <br />
-              <span className="text-amber-300">Export to MIDI and use in your favorite DAW.</span>
+              <span className="text-amber-300 dark:text-amber-200">Export to MIDI and use in your favorite DAW.</span>
             </p>
-            <div className="flex flex-wrap justify-center gap-4 text-sm text-slate-400">
+            <div className="flex flex-wrap justify-center gap-4 text-sm text-slate-400 dark:text-slate-300">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-amber-400 rounded-full" />
+                <div className="w-2 h-2 bg-amber-400 dark:bg-amber-300 rounded-full" />
                 <span>Real-time Audio Preview</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-amber-400 rounded-full" />
+                <div className="w-2 h-2 bg-amber-400 dark:bg-amber-300 rounded-full" />
                 <span>Professional MIDI Export</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-amber-400 rounded-full" />
+                <div className="w-2 h-2 bg-amber-400 dark:bg-amber-300 rounded-full" />
                 <span>Rhythmic Patterns</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-amber-400 rounded-full" />
+                <div className="w-2 h-2 bg-amber-400 dark:bg-amber-300 rounded-full" />
                 <span>Music Theory Intelligence</span>
               </div>
             </div>
@@ -182,6 +210,8 @@ function App() {
             onExtensionsChange={setAddExtensions}
             onMelodyChange={setMelodyEnabled}
             onSaveLoad={handleSaveLoad}
+            isDarkMode={isDarkMode}
+            onThemeToggle={toggleTheme}
           />
 
           {/* Chord Progression Display */}
@@ -229,17 +259,17 @@ function App() {
             <div className="text-center py-20">
               <div className="max-w-md mx-auto">
                 <div className="relative w-32 h-32 mx-auto mb-8">
-                  <div className="absolute inset-0 bg-gradient-to-br from-amber-100 to-amber-200 rounded-full animate-pulse" />
-                  <div className="absolute inset-2 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center">
-                    <Music className="w-16 h-16 text-slate-400" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900/30 dark:to-amber-800/30 rounded-full animate-pulse" />
+                  <div className="absolute inset-2 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 rounded-full flex items-center justify-center">
+                    <Music className="w-16 h-16 text-slate-400 dark:text-slate-500" />
                   </div>
                 </div>
-                <h3 className="text-2xl font-bold text-slate-800 mb-4">
+                <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-200 mb-4">
                   Ready to create music?
                 </h3>
-                <p className="text-slate-600 mb-8 text-lg leading-relaxed">
+                <p className="text-slate-600 dark:text-slate-400 mb-8 text-lg leading-relaxed">
                   Click "Generate" to create your first chord progression.<br />
-                  <span className="text-sm text-slate-500">Choose rhythm patterns • Hover over chords to preview • Export as MIDI</span>
+                  <span className="text-sm text-slate-500 dark:text-slate-500">Choose rhythm patterns • Hover over chords to preview • Export as MIDI</span>
                 </p>
                 <button
                   onClick={handleGenerate}
@@ -274,9 +304,9 @@ function App() {
       )}
 
       {/* Footer */}
-      <footer className="border-t border-slate-200/50 glass-panel">
+      <footer className="border-t border-slate-200/50 dark:border-slate-700/50 glass-panel">
         <div className="container mx-auto px-4 py-6">
-          <div className="text-center text-slate-500">
+          <div className="text-center text-slate-500 dark:text-slate-400">
             <p className="font-medium">Built for musicians, producers, and creators worldwide</p>
           </div>
         </div>

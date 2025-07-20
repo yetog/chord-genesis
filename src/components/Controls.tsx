@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shuffle, Download, Play, Pause, Settings, Music, Sliders, FolderOpen, Music2 } from 'lucide-react';
+import { Shuffle, Download, Play, Pause, Settings, Music, Sliders, FolderOpen, Music2, Sun, Moon } from 'lucide-react';
 import { KEYS, SCALES, CHORD_TEMPLATES, INSTRUMENTS } from '../types/music';
 import { RHYTHM_PATTERNS } from '../utils/rhythmPatterns';
 
@@ -23,6 +23,8 @@ interface ControlsProps {
   onExtensionsChange: (value: boolean) => void;
   onMelodyChange: (value: boolean) => void;
   onSaveLoad: () => void;
+  isDarkMode: boolean;
+  onThemeToggle: () => void;
 }
 
 export default function Controls({
@@ -45,11 +47,25 @@ export default function Controls({
   onExtensionsChange,
   onMelodyChange,
   onSaveLoad
+  isDarkMode,
+  onThemeToggle
 }: ControlsProps) {
   return (
     <div className="space-y-8">
       {/* Main Controls */}
       <div className="flex flex-wrap gap-4 justify-center">
+        <button
+          onClick={onThemeToggle}
+          className="btn-theme group"
+          title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+        >
+          {isDarkMode ? (
+            <Sun className="w-5 h-5 text-amber-500 group-hover:rotate-180 transition-transform duration-500" />
+          ) : (
+            <Moon className="w-5 h-5 text-slate-600 group-hover:rotate-12 transition-transform duration-300" />
+          )}
+        </button>
+
         <button
           onClick={onShuffle}
           className="btn-secondary group"
@@ -102,20 +118,20 @@ export default function Controls({
           <div className="p-2 bg-gradient-to-br from-amber-400/20 to-amber-600/20 rounded-lg">
             <Sliders className="w-5 h-5 text-amber-600" />
           </div>
-          <h3 className="font-semibold text-slate-900 text-lg">Progression Settings</h3>
+          <h3 className="font-semibold text-slate-900 dark:text-slate-100 text-lg">Progression Settings</h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           {/* Key Selection */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
               <Music className="w-4 h-4 text-amber-500" />
               Key
             </label>
             <select
               value={selectedKey}
               onChange={(e) => onKeyChange(e.target.value)}
-              className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 font-medium"
+              className="select-field"
             >
               {KEYS.map(key => (
                 <option key={key.name} value={key.name}>
@@ -127,14 +143,14 @@ export default function Controls({
 
           {/* Scale Selection */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
               <Settings className="w-4 h-4 text-amber-500" />
               Scale
             </label>
             <select
               value={selectedScale}
               onChange={(e) => onScaleChange(e.target.value)}
-              className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 font-medium"
+              className="select-field"
             >
               {Object.entries(SCALES).map(([key, scale]) => (
                 <option key={key} value={key}>
@@ -146,14 +162,14 @@ export default function Controls({
 
           {/* Template Selection */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
               <Shuffle className="w-4 h-4 text-amber-500" />
               Template
             </label>
             <select
               value={selectedTemplate}
               onChange={(e) => onTemplateChange(e.target.value)}
-              className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 font-medium"
+              className="select-field"
             >
               {CHORD_TEMPLATES.map(template => (
                 <option key={template.name} value={template.name}>
@@ -166,14 +182,14 @@ export default function Controls({
           {/* Instrument Selection */}
           {/* Rhythm Pattern Selection */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
               <Settings className="w-4 h-4 text-amber-500" />
               Rhythm
             </label>
             <select
               value={selectedRhythmPattern}
               onChange={(e) => onRhythmChange(e.target.value)}
-              className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 font-medium"
+              className="select-field"
             >
               {RHYTHM_PATTERNS.map(pattern => (
                 <option key={pattern.name} value={pattern.name}>
@@ -186,7 +202,7 @@ export default function Controls({
 
         {/* Feature Toggles */}
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="flex items-center gap-3 p-4 bg-white/40 rounded-xl border border-slate-200/50">
+          <div className="flex items-center gap-3 p-4 bg-white/40 dark:bg-slate-800/40 rounded-xl border border-slate-200/50 dark:border-slate-600/50">
             <label className="flex items-center cursor-pointer">
               <input
                 type="checkbox"
@@ -203,13 +219,13 @@ export default function Controls({
                   ${addExtensions ? 'transform translate-x-6' : ''}
                 `} />
               </div>
-              <span className="ml-3 text-sm font-semibold text-slate-700">
+              <span className="ml-3 text-sm font-semibold text-slate-700 dark:text-slate-300">
                 Add 7th Extensions
               </span>
             </label>
           </div>
 
-          <div className="flex items-center gap-3 p-4 bg-white/40 rounded-xl border border-slate-200/50">
+          <div className="flex items-center gap-3 p-4 bg-white/40 dark:bg-slate-800/40 rounded-xl border border-slate-200/50 dark:border-slate-600/50">
             <label className="flex items-center cursor-pointer">
               <input
                 type="checkbox"
@@ -219,14 +235,14 @@ export default function Controls({
               />
               <div className={`
                 relative w-12 h-6 rounded-full transition-colors duration-200
-                ${melodyEnabled ? 'bg-gradient-to-r from-blue-400 to-blue-500' : 'bg-slate-300'}
+                ${melodyEnabled ? 'bg-gradient-to-r from-blue-400 to-blue-500' : 'bg-slate-300 dark:bg-slate-600'}
               `}>
                 <div className={`
                   absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 shadow-sm
                   ${melodyEnabled ? 'transform translate-x-6' : ''}
                 `} />
               </div>
-              <span className="ml-3 text-sm font-semibold text-slate-700 flex items-center gap-2">
+              <span className="ml-3 text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
                 <Music2 className="w-4 h-4" />
                 Generate Melody
               </span>
