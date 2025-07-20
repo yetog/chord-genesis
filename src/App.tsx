@@ -44,7 +44,8 @@ function App() {
       addExtensions
     );
     setProgression(newProgression);
-  }, [selectedKey, selectedScale, selectedTemplate, addExtensions, isPlaying, stopPlayback]);
+  }, [isPlaying, stopPlayback, selectedTemplate, selectedKey, selectedScale, addExtensions]);
+
   const handlePlay = useCallback(() => {
     if (progression) {
       playProgression(progression.chords, selectedRhythmPattern);
