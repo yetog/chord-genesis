@@ -13,6 +13,7 @@ function App() {
   const [selectedScale, setSelectedScale] = useState('major');
   const [selectedTemplate, setSelectedTemplate] = useState('Random');
   const [selectedRhythmPattern, setSelectedRhythmPattern] = useState('Block Chord');
+  const [selectedInstrument, setSelectedInstrument] = useState('sine');
   const [addExtensions, setAddExtensions] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [exportSuccess, setExportSuccess] = useState(false);
@@ -50,9 +51,8 @@ function App() {
 
   const handlePlay = useCallback(() => {
     if (progression) {
-      playProgression(progression.chords, selectedRhythmPattern);
+      playProgression(progression.chords, selectedRhythmPattern, selectedInstrument);
     }
-  }, [progression, playProgression, selectedRhythmPattern]);
 
   const handleExport = useCallback(async () => {
     if (!progression) return;
