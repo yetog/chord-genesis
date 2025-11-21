@@ -7,7 +7,7 @@ export function useAudioContext() {
   const [isLooping, setIsLooping] = useState(true);
   const [currentChordIndex, setCurrentChordIndex] = useState(-1);
   const [tempo, setTempo] = useState(120);
-  const [masterVolume, setMasterVolume] = useState(0.8); // 80% default volume
+  const [masterVolume, setMasterVolume] = useState(1.0); // 100% default volume for maximum output
   const audioContextRef = useRef<AudioContext | null>(null);
   const masterGainRef = useRef<GainNode | null>(null);
   const compressorRef = useRef<DynamicsCompressorNode | null>(null);
@@ -17,17 +17,19 @@ export function useAudioContext() {
 
   const initAudioContext = useCallback(async () => {
     if (!audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      // Use webkitAudioContext for older iOS devices
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      audioContextRef.current = new AudioContextClass();
       
       // Create master gain control
       masterGainRef.current = audioContextRef.current.createGain();
       masterGainRef.current.gain.setValueAtTime(masterVolume, audioContextRef.current.currentTime);
       
-      // Create compressor to prevent clipping
+      // Create compressor to prevent clipping with higher threshold for louder output
       compressorRef.current = audioContextRef.current.createDynamicsCompressor();
-      compressorRef.current.threshold.setValueAtTime(-24, audioContextRef.current.currentTime);
+      compressorRef.current.threshold.setValueAtTime(-12, audioContextRef.current.currentTime); // Higher threshold for louder output
       compressorRef.current.knee.setValueAtTime(30, audioContextRef.current.currentTime);
-      compressorRef.current.ratio.setValueAtTime(12, audioContextRef.current.currentTime);
+      compressorRef.current.ratio.setValueAtTime(6, audioContextRef.current.currentTime); // Lower ratio for more natural sound
       compressorRef.current.attack.setValueAtTime(0.003, audioContextRef.current.currentTime);
       compressorRef.current.release.setValueAtTime(0.25, audioContextRef.current.currentTime);
       
@@ -36,12 +38,18 @@ export function useAudioContext() {
       masterGainRef.current.connect(audioContextRef.current.destination);
     }
     
+    // Critical mobile fix: Always try to resume AudioContext
     if (audioContextRef.current.state === 'suspended') {
-      await audioContextRef.current.resume();
+      try {
+        await audioContextRef.current.resume();
+        console.log('AudioContext resumed successfully');
+      } catch (error) {
+        console.warn('Failed to resume AudioContext:', error);
+      }
     }
     
     return audioContextRef.current;
-  }, []);
+  }, [masterVolume]);
 
   const updateMasterVolume = useCallback((volume: number) => {
     setMasterVolume(volume);
@@ -102,8 +110,8 @@ export function useAudioContext() {
       notesToPlay = [root, ...upperNotes, ...upperNotes];
     }
 
-    // Much lower base volume to prevent clipping during loops
-    const baseVolume = preview ? 0.008 : 0.015; // Significantly reduced
+    // Increased volume to match MP3 output levels
+    const baseVolume = preview ? 0.15 : 0.25; // Significantly increased for better volume matching
     const volume = baseVolume / Math.max(notesToPlay.length, 1);
     
     // Improved envelope timing for smooth transitions
@@ -157,6 +165,14 @@ export function useAudioContext() {
   }, []);
 
   const playProgression = useCallback(async (chords: Chord[], rhythmPattern: string = 'Block Chord', instrumentType: string = 'sine') => {
+    // Critical mobile fix: Ensure AudioContext is initialized and resumed on user interaction
+    try {
+      await initAudioContext();
+    } catch (error) {
+      console.error('Failed to initialize audio context:', error);
+      return;
+    }
+
     const chordDuration = (60 / tempo) * 1000 * 1.8; // Slightly faster for smoother flow
     
     if (isPlaying) {

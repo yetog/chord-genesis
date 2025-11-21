@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shuffle, Download, Play, Pause, Settings, Music, Sliders, FolderOpen, Music2, RefreshCw } from 'lucide-react';
+import { Shuffle, Download, Play, Pause, Settings, Music, Sliders, FolderOpen, Music2, RefreshCw, Check } from 'lucide-react';
 import { KEYS, SCALES, CHORD_TEMPLATES, INSTRUMENTS } from '../types/music';
 import { RHYTHM_PATTERNS } from '../utils/rhythmPatterns';
 
@@ -91,7 +91,7 @@ export default function Controls({
           {isExporting ? (
             <div className="loading-spinner" />
           ) : exportSuccess ? (
-            <div className="success-checkmark">✓</div>
+            <Check className="w-5 h-5 text-green-400" />
           ) : (
             <Download className="w-5 h-5 group-hover:translate-y-0.5 transition-transform duration-200" />
           )}

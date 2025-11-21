@@ -155,6 +155,32 @@ export const CHORD_TEMPLATES = [
   { name: 'Random', degrees: [] }
 ];
 
+// Music Genre Templates with BPM ranges
+export interface MusicGenre {
+  name: string;
+  degrees: number[];
+  bpmRange: [number, number];
+  preferredScale?: string;
+  color: string;
+}
+
+export const MUSIC_GENRES: MusicGenre[] = [
+  { name: 'Hip Hop', degrees: [0, 5, 3, 4], bpmRange: [70, 90], preferredScale: 'minor', color: 'from-purple-500 to-pink-600' },
+  { name: 'Trap Soul', degrees: [5, 3, 0, 4], bpmRange: [75, 85], preferredScale: 'minor', color: 'from-indigo-500 to-purple-600' },
+  { name: 'R&B', degrees: [0, 2, 3, 4], bpmRange: [70, 100], preferredScale: 'major', color: 'from-rose-500 to-pink-600' },
+  { name: 'Vaporwave', degrees: [0, 4, 5, 3], bpmRange: [60, 85], preferredScale: 'major', color: 'from-cyan-400 to-purple-500' },
+  { name: 'West Coast', degrees: [0, 6, 3, 0], bpmRange: [85, 95], preferredScale: 'minor', color: 'from-orange-500 to-red-600' },
+  { name: 'G-Funk', degrees: [5, 1, 4, 0], bpmRange: [90, 110], preferredScale: 'minor', color: 'from-green-500 to-blue-600' },
+  { name: 'Rap', degrees: [0, 5, 3, 4], bpmRange: [80, 100], preferredScale: 'minor', color: 'from-gray-600 to-gray-800' },
+  { name: 'Late Night', degrees: [5, 3, 0, 2], bpmRange: [60, 75], preferredScale: 'minor', color: 'from-blue-800 to-purple-900' },
+  { name: 'UK R&B Jazz', degrees: [1, 4, 0, 5], bpmRange: [85, 105], preferredScale: 'dorian', color: 'from-emerald-500 to-teal-600' },
+  { name: 'Lo-Fi', degrees: [0, 4, 5, 2], bpmRange: [70, 90], preferredScale: 'major', color: 'from-amber-400 to-orange-500' },
+  { name: 'Brazilian Jazz', degrees: [2, 5, 1, 4], bpmRange: [120, 140], preferredScale: 'major', color: 'from-yellow-400 to-green-500' }
+];
+
+// BPM Options
+export const BPM_PRESETS = [60, 70, 80, 85, 90, 95, 100, 110, 120, 130, 140];
+
 // Extended chord qualities for advanced harmony
 export const EXTENDED_CHORD_QUALITIES = [
   'maj', 'min', 'dim', 'aug', 'sus2', 'sus4',

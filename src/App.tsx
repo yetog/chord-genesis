@@ -1,11 +1,11 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { Music, Sparkles, FolderOpen } from 'lucide-react';
-import Controls from './components/Controls';
+import React, { useState, useCallback } from 'react';
+import { Music, Sparkles, Home } from 'lucide-react';
+import EnhancedControls from './components/EnhancedControls';
 import ChordCard from './components/ChordCard';
 import PlaybackBar from './components/PlaybackBar';
-import MelodyDisplay from './components/MelodyDisplay';
 import SaveLoadPanel from './components/SaveLoadPanel';
-import { ChordProgression, CHORD_TEMPLATES, SavedIdea } from './types/music';
+import MusicGeneratorPanel from './components/ElevenLabsPanel';
+import { ChordProgression, CHORD_TEMPLATES, SavedIdea, MUSIC_GENRES } from './types/music';
 import { KEYS, SCALES } from './types/music';
 import { generateProgression, progressionToMidiData } from './utils/musicTheory';
 import { RHYTHM_PATTERNS } from './utils/rhythmPatterns';
@@ -17,6 +17,9 @@ function App() {
   const [selectedScale, setSelectedScale] = useState('major');
   const [selectedTemplate, setSelectedTemplate] = useState('Random');
   const [selectedRhythmPattern, setSelectedRhythmPattern] = useState('Block Chord');
+  const [selectedGenre, setSelectedGenre] = useState('');
+  const [selectedBPM, setSelectedBPM] = useState(120);
+  const [customInput, setCustomInput] = useState('');
   const [addExtensions, setAddExtensions] = useState(false);
   const [melodyEnabled, setMelodyEnabled] = useState(false);
   const [showSaveLoad, setShowSaveLoad] = useState(false);
@@ -138,7 +141,7 @@ function App() {
     setMelodyEnabled(idea.settings.melodyEnabled);
   }, []);
 
-  const handleChordHover = useCallback((chord: any) => {
+  const handleChordHover = useCallback((chord: { root: string; quality: string; name: string }) => {
     if (!isPlaying) {
       playChordPreview(chord);
     }
@@ -151,6 +154,17 @@ function App() {
         <div className="absolute inset-0 bg-gradient-to-r from-amber-500/15 to-amber-600/10" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(245,158,11,0.2),transparent_50%)]" />
         <div className="relative container mx-auto px-4 py-16">
+          {/* Home Button */}
+          <div className="absolute top-6 left-6 z-10">
+            <a 
+              href="https://zaylegend.com" 
+              className="inline-flex items-center gap-2 px-4 py-2 bg-black/50 backdrop-blur-sm border border-gray-700 rounded-xl text-gray-300 hover:text-white hover:border-amber-500 transition-all duration-200"
+            >
+              <Home className="w-4 h-4" />
+              <span className="hidden sm:inline">Home</span>
+            </a>
+          </div>
+          
           <div className="text-center">
             <div className="inline-flex items-center gap-4 mb-6">
               <div className="relative">
@@ -195,12 +209,15 @@ function App() {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-6xl mx-auto space-y-10">
-          {/* Controls */}
-          <Controls
+          {/* Enhanced Controls */}
+          <EnhancedControls
             selectedKey={selectedKey}
             selectedScale={selectedScale}
             selectedTemplate={selectedTemplate}
             selectedRhythmPattern={selectedRhythmPattern}
+            selectedGenre={selectedGenre}
+            selectedBPM={selectedBPM}
+            customInput={customInput}
             isPlaying={isPlaying}
             addExtensions={addExtensions}
             melodyEnabled={melodyEnabled}
@@ -210,6 +227,9 @@ function App() {
             onScaleChange={setSelectedScale}
             onTemplateChange={setSelectedTemplate}
             onRhythmChange={setSelectedRhythmPattern}
+            onGenreChange={setSelectedGenre}
+            onBPMChange={setSelectedBPM}
+            onCustomInputChange={setCustomInput}
             onShuffle={handleGenerate}
             onRandomize={handleRandomize}
             onPlay={handlePlay}
@@ -255,6 +275,13 @@ function App() {
                 onTempoChange={setTempo}
                 masterVolume={masterVolume}
                 onVolumeChange={setMasterVolume}
+              />
+
+              {/* AI Music Generator */}
+              <MusicGeneratorPanel
+                currentProgression={progression}
+                selectedKey={selectedKey}
+                selectedScale={selectedScale}
               />
             </div>
           )}
