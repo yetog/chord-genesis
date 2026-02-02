@@ -8,4 +8,22 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Split the ElevenLabs SDK into separate chunk
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('@11labs') || id.includes('@elevenlabs') || id.includes('elevenlabs')) {
+              return 'elevenlabs';
+            }
+            if (id.includes('react-dom')) {
+              return 'react-vendor';
+            }
+          }
+        },
+      },
+    },
+    chunkSizeWarningLimit: 600,
+  },
 });
