@@ -52,11 +52,12 @@ export default function MusicGeneratorPanel({
     { id: 'jazz', name: 'Jazz', description: 'Sophisticated harmonies and rhythms', color: 'from-purple-600 to-indigo-700', bpmRange: [100, 140] },
     { id: 'folk', name: 'Folk', description: 'Simple, melodic arrangements', color: 'from-orange-500 to-red-500', bpmRange: [80, 110] },
     { id: 'rock', name: 'Rock', description: 'Guitar-driven with energy', color: 'from-red-600 to-rose-700', bpmRange: [110, 150] },
-    
+
     // Genre styles from music genres
     { id: 'hiphop', name: 'Hip Hop', description: 'Urban beats and rhythmic flow', color: 'from-purple-500 to-pink-600', bpmRange: [70, 90] },
     { id: 'trapsoul', name: 'Trap Soul', description: 'Melodic trap with soulful elements', color: 'from-indigo-500 to-purple-600', bpmRange: [75, 85] },
     { id: 'rnb', name: 'R&B', description: 'Smooth rhythm and blues', color: 'from-rose-500 to-pink-600', bpmRange: [70, 100] },
+    { id: 'citypop', name: 'City Pop Bounce', description: 'Japanese city pop with house, funk, R&B bounce', color: 'from-pink-400 to-purple-500', bpmRange: [100, 120] },
     { id: 'vaporwave', name: 'Vaporwave', description: 'Nostalgic synthesized atmospheres', color: 'from-cyan-400 to-purple-500', bpmRange: [60, 85] },
     { id: 'westcoast', name: 'West Coast', description: 'West Coast hip hop style', color: 'from-orange-500 to-red-600', bpmRange: [85, 95] },
     { id: 'gfunk', name: 'G-Funk', description: 'Funk-influenced hip hop', color: 'from-green-500 to-blue-600', bpmRange: [90, 110] },
@@ -64,7 +65,10 @@ export default function MusicGeneratorPanel({
     { id: 'latenight', name: 'Late Night', description: 'Moody late-night vibes', color: 'from-blue-800 to-purple-900', bpmRange: [60, 75] },
     { id: 'ukrnbjazz', name: 'UK R&B Jazz', description: 'UK-influenced R&B with jazz elements', color: 'from-emerald-500 to-teal-600', bpmRange: [85, 105] },
     { id: 'lofi', name: 'Lo-Fi', description: 'Relaxed lo-fi hip hop', color: 'from-amber-400 to-orange-500', bpmRange: [70, 90] },
-    { id: 'brazilianjazz', name: 'Brazilian Jazz', description: 'Bossa nova and Brazilian rhythms', color: 'from-yellow-400 to-green-500', bpmRange: [120, 140] }
+    { id: 'brazilianjazz', name: 'Brazilian Jazz', description: 'Bossa nova and Brazilian rhythms', color: 'from-yellow-400 to-green-500', bpmRange: [120, 140] },
+    { id: 'house', name: 'House', description: 'Four-on-the-floor electronic dance', color: 'from-blue-500 to-indigo-600', bpmRange: [120, 130] },
+    { id: 'funk', name: 'Funk', description: 'Groovy, rhythmic bass-driven', color: 'from-orange-400 to-pink-500', bpmRange: [100, 120] },
+    { id: 'neosoul', name: 'Neo Soul', description: 'Modern soul with jazz influences', color: 'from-teal-400 to-emerald-600', bpmRange: [75, 95] }
   ];
 
   // Calculate effective BPM based on user settings
@@ -231,11 +235,14 @@ export default function MusicGeneratorPanel({
               className="w-full bg-gray-800/50 border border-gray-600 rounded-lg px-3 py-2 text-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
             >
               <option value={15000}>15 seconds</option>
-              <option value={30000}>30 seconds (recommended)</option>
+              <option value={30000}>30 seconds</option>
               <option value={45000}>45 seconds</option>
-              <option value={60000}>1 minute</option>
+              <option value={60000}>1 minute (recommended)</option>
               <option value={90000}>1.5 minutes</option>
               <option value={120000}>2 minutes</option>
+              <option value={180000}>3 minutes</option>
+              <option value={240000}>4 minutes</option>
+              <option value={300000}>5 minutes</option>
             </select>
             <p className="text-xs text-gray-500 mt-1">
               Actual duration may vary slightly based on musical phrasing

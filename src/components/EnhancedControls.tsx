@@ -16,6 +16,7 @@ interface EnhancedControlsProps {
   melodyEnabled: boolean;
   isExporting?: boolean;
   exportSuccess?: boolean;
+  isAdvancedMode?: boolean;
   onKeyChange: (key: string) => void;
   onScaleChange: (scale: string) => void;
   onTemplateChange: (template: string) => void;
@@ -45,6 +46,7 @@ export default function EnhancedControls({
   melodyEnabled,
   isExporting = false,
   exportSuccess = false,
+  isAdvancedMode = true,
   onKeyChange,
   onScaleChange,
   onTemplateChange,

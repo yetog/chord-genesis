@@ -1,5 +1,14 @@
-import { SCALES, KEYS, Chord, ChordProgression } from '../types/music';
+import { SCALES, KEYS, Chord, ChordProgression, EnergyLevel, GrooveType, DrumStyle, BeatDropType } from '../types/music';
 import { Melody, MelodyNote } from '../types/music';
+
+// Generation options interface
+export interface GenerationOptions {
+  energy?: EnergyLevel;
+  groove?: GrooveType;
+  drumStyle?: DrumStyle;
+  beatDrop?: BeatDropType;
+  instrument?: string;
+}
 
 const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
@@ -153,45 +162,64 @@ export function generateMelody(
   key: string,
   scale: string,
   chords: Chord[],
-  length: number = 16 // beats
+  length: number = 16, // beats
+  options: { energy?: EnergyLevel; groove?: GrooveType } = {}
 ): Melody {
+  const { energy = 'medium', groove = 'smooth' } = options;
+
   const keyValue = KEYS.find(k => k.name === key)?.value || 0;
   const scaleData = SCALES[scale];
-  
+
   if (!scaleData) {
     throw new Error(`Scale "${scale}" not found`);
   }
 
-  const scaleNotes = scaleData.intervals.map(interval => 
-    (keyValue + interval) % 12 + 60 // Start at middle C octave
+  // Energy affects melody octave and velocity
+  const melodyOctave = {
+    chill: 60, medium: 60, high: 72, intense: 72
+  }[energy];
+
+  const velocityRange = {
+    chill: [50, 70], medium: [65, 85], high: [80, 100], intense: [90, 120]
+  }[energy];
+
+  // Groove affects note density
+  const noteDensityMod = {
+    smooth: 0, bouncy: 1, driving: 2, danceable: 1, syncopated: 1
+  }[groove];
+
+  const scaleNotes = scaleData.intervals.map(interval =>
+    (keyValue + interval) % 12 + melodyOctave
   );
 
   const notes: MelodyNote[] = [];
   const beatsPerChord = length / chords.length;
-  
+
   let currentTime = 0;
   let lastNote = scaleNotes[0]; // Start on tonic
 
   chords.forEach((chord, chordIndex) => {
     const chordTones = chord.midiNotes.map(note => note % 12);
     const chordEndTime = currentTime + beatsPerChord;
-    
-    // Generate 2-4 notes per chord
-    const notesInChord = Math.floor(Math.random() * 3) + 2;
+
+    // Energy and groove affect notes per chord
+    const baseNotes = energy === 'chill' ? 2 : energy === 'intense' ? 4 : 3;
+    const notesInChord = Math.max(2, Math.floor(Math.random() * 2) + baseNotes + noteDensityMod);
     const noteSpacing = beatsPerChord / notesInChord;
-    
+
     for (let i = 0; i < notesInChord; i++) {
       let nextNote: number;
-      
-      if (Math.random() > 0.3) {
-        // 70% chance to use chord tone
+
+      // Higher energy = more chord tones, more intervallic leaps
+      const chordToneChance = energy === 'chill' ? 0.8 : energy === 'intense' ? 0.5 : 0.7;
+
+      if (Math.random() < chordToneChance) {
         const chordTone = chordTones[Math.floor(Math.random() * chordTones.length)];
-        nextNote = chordTone + 60; // Middle C octave
+        nextNote = chordTone + melodyOctave;
       } else {
-        // 30% chance to use scale tone
         nextNote = scaleNotes[Math.floor(Math.random() * scaleNotes.length)];
       }
-      
+
       // Keep melody in reasonable range
       while (Math.abs(nextNote - lastNote) > 12) {
         if (nextNote > lastNote) {
@@ -200,29 +228,30 @@ export function generateMelody(
           nextNote += 12;
         }
       }
-      
-      // Prefer stepwise motion
-      if (Math.abs(nextNote - lastNote) > 7 && Math.random() > 0.3) {
+
+      // Groove affects stepwise preference
+      const stepwiseChance = groove === 'smooth' ? 0.8 : groove === 'syncopated' ? 0.4 : 0.6;
+      if (Math.abs(nextNote - lastNote) > 7 && Math.random() < stepwiseChance) {
         const direction = nextNote > lastNote ? -1 : 1;
         const stepwiseNote = lastNote + (direction * (Math.floor(Math.random() * 3) + 1));
-        if (scaleNotes.includes(stepwiseNote % 12 + 60) || chordTones.includes(stepwiseNote % 12)) {
+        if (scaleNotes.includes(stepwiseNote % 12 + melodyOctave) || chordTones.includes(stepwiseNote % 12)) {
           nextNote = stepwiseNote;
         }
       }
-      
-      const duration = noteSpacing * (0.7 + Math.random() * 0.6); // Vary duration
-      const velocity = 70 + Math.floor(Math.random() * 30); // Vary velocity
-      
+
+      const duration = noteSpacing * (0.7 + Math.random() * 0.6);
+      const velocity = velocityRange[0] + Math.floor(Math.random() * (velocityRange[1] - velocityRange[0]));
+
       notes.push({
         midiNote: nextNote,
         duration,
         startTime: currentTime + (i * noteSpacing),
         velocity
       });
-      
+
       lastNote = nextNote;
     }
-    
+
     currentTime = chordEndTime;
   });
 
@@ -240,66 +269,121 @@ export function generateProgression(
   template: number[],
   length: number = 4,
   addExtensions: boolean = false,
-  generateMelodyFlag: boolean = false
+  generateMelodyFlag: boolean = false,
+  options: GenerationOptions = {}
 ): ChordProgression {
+  const {
+    energy = 'medium',
+    groove = 'smooth',
+    drumStyle = 'acoustic',
+    beatDrop = 'none',
+    instrument = 'piano'
+  } = options;
+
   const keyValue = KEYS.find(k => k.name === key)?.value || 0;
   const scaleData = SCALES[scale];
-  
+
   if (!scaleData) {
     throw new Error(`Scale "${scale}" not found`);
   }
-  
+
+  // Energy affects chord complexity and voicing
+  const energySettings = {
+    chill: { extensionChance: 0.2, inversionChance: 0.1, octave: 3, velocityRange: [50, 70] },
+    medium: { extensionChance: 0.4, inversionChance: 0.2, octave: 4, velocityRange: [65, 85] },
+    high: { extensionChance: 0.6, inversionChance: 0.3, octave: 4, velocityRange: [80, 100] },
+    intense: { extensionChance: 0.8, inversionChance: 0.4, octave: 5, velocityRange: [90, 127] }
+  };
+
+  // Groove affects timing variations and note density
+  const grooveSettings = {
+    smooth: { swingAmount: 0, noteDensity: 1.0, timingVariation: 0.05 },
+    bouncy: { swingAmount: 0.15, noteDensity: 1.2, timingVariation: 0.1 },
+    driving: { swingAmount: 0, noteDensity: 1.5, timingVariation: 0.02 },
+    danceable: { swingAmount: 0.1, noteDensity: 1.3, timingVariation: 0.08 },
+    syncopated: { swingAmount: 0.2, noteDensity: 1.4, timingVariation: 0.15 }
+  };
+
+  const currentEnergy = energySettings[energy];
+  const currentGroove = grooveSettings[groove];
+
   let degrees: number[];
-  
+
   if (template.length > 0) {
     degrees = template;
   } else {
-    // Generate random progression
+    // Generate random progression influenced by energy
     degrees = [];
-    for (let i = 0; i < length; i++) {
+    const numChords = energy === 'chill' ? Math.max(3, length - 1) :
+                      energy === 'intense' ? length + 1 : length;
+    for (let i = 0; i < numChords; i++) {
       degrees.push(Math.floor(Math.random() * scaleData.intervals.length));
     }
   }
 
-  const chords: Chord[] = degrees.map(degree => {
+  const chords: Chord[] = degrees.map((degree, index) => {
     const adjustedDegree = degree % scaleData.intervals.length;
     const rootNote = (keyValue + scaleData.intervals[adjustedDegree]) % 12;
     let quality = scaleData.chordQualities[adjustedDegree];
-    
-    // Add variety with extended chords
-    if (addExtensions && Math.random() > 0.3) {
+
+    // Energy-influenced extension probability
+    const shouldExtend = addExtensions || Math.random() < currentEnergy.extensionChance;
+
+    if (shouldExtend && Math.random() > 0.3) {
       const extendedQualities = {
-        'maj': ['maj7', 'maj9', 'add9'],
-        'min': ['min7', 'min9'],
+        'maj': energy === 'intense' ? ['maj9', 'maj11', 'maj13'] : ['maj7', 'maj9', 'add9'],
+        'min': energy === 'intense' ? ['min9', 'min11'] : ['min7', 'min9'],
         'dim': ['m7b5', 'dim7']
       };
-      
+
       const possibleExtensions = extendedQualities[quality as keyof typeof extendedQualities];
       if (possibleExtensions) {
         quality = possibleExtensions[Math.floor(Math.random() * possibleExtensions.length)];
       }
     }
-    
-    const extensions = addExtensions && Math.random() > 0.6 ? 
+
+    // Beat drop affects specific chord positions
+    let chordOctave = currentEnergy.octave;
+    if (beatDrop === 'dramatic' && index === degrees.length - 1) {
+      chordOctave = currentEnergy.octave + 1; // Build tension for drop
+    } else if (beatDrop === 'subtle' && index === Math.floor(degrees.length / 2)) {
+      chordOctave = currentEnergy.octave - 1; // Subtle dip
+    }
+
+    // Groove-influenced inversions
+    const useInversion = Math.random() < currentEnergy.inversionChance;
+    const inversion = useInversion ? Math.floor(Math.random() * 3) : 0;
+
+    const extensions = shouldExtend && Math.random() > 0.5 ?
       [Math.random() > 0.5 ? '9' : '11'] : [];
-    
+
     return {
       root: NOTE_NAMES[rootNote],
       quality,
       extensions,
-      midiNotes: generateChordMidiNotes(rootNote, quality, 4, extensions)
+      inversion,
+      midiNotes: generateChordMidiNotes(rootNote, quality, chordOctave, extensions, inversion)
     };
   });
+
+  // Tempo influenced by energy and groove
+  const baseTempo = {
+    chill: 70, medium: 100, high: 120, intense: 140
+  };
+  const grooveTempoMod = {
+    smooth: 0, bouncy: 5, driving: 10, danceable: 8, syncopated: -5
+  };
+  const tempo = baseTempo[energy] + grooveTempoMod[groove];
 
   const progression: ChordProgression = {
     chords,
     key,
     scale,
-    tempo: 120
+    tempo
   };
 
   if (generateMelodyFlag) {
-    progression.melody = generateMelody(key, scale, chords, 16);
+    progression.melody = generateMelody(key, scale, chords, 16, { energy, groove });
   }
 
   return progression;
