@@ -1,0 +1,17 @@
+[Unit]
+Description=Chord Genesis Audio Analysis API
+After=network.target
+
+[Service]
+Type=simple
+User=langchain
+Group=www-data
+WorkingDirectory=/var/www/zaylegend/apps/chord-genesis/backend
+Environment=PATH=/home/langchain/.local/bin:/usr/bin:/bin
+Environment=PORT=3020
+ExecStart=/usr/bin/python3 /var/www/zaylegend/apps/chord-genesis/backend/main.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

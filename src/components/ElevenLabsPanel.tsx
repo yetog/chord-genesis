@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Music, Sparkles, AlertCircle, Volume2, ChevronDown, ArrowRight } from 'lucide-react';
 import { useElevenLabs } from '../hooks/useElevenLabs';
 import AudioPlayer from './AudioPlayer';
@@ -18,18 +18,22 @@ interface MusicGeneratorProps {
   currentProgression?: ChordProgression;
   selectedKey?: string;
   selectedScale?: string;
+  externalPrompt?: string;
+  onExternalPromptClear?: () => void;
 }
 
-export default function MusicGeneratorPanel({ 
-  currentProgression, 
-  selectedKey = 'C', 
-  selectedScale = 'major' 
+export default function MusicGeneratorPanel({
+  currentProgression,
+  selectedKey = 'C',
+  selectedScale = 'major',
+  externalPrompt,
+  onExternalPromptClear
 }: MusicGeneratorProps) {
   const [selectedGenre, setSelectedGenre] = useState('ambient');
   const [musicLength, setMusicLength] = useState(30000);
   const [selectedBPM, setSelectedBPM] = useState(120);
   const [useGenreBPM, setUseGenreBPM] = useState(false);
-  const [customInput, setCustomInput] = useState('');
+  const [customInput, setCustomInput] = useState(externalPrompt || '');
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [includeVocals, setIncludeVocals] = useState(false);
   const [generatedAudio, setGeneratedAudio] = useState<ArrayBuffer | null>(null);
@@ -40,6 +44,14 @@ export default function MusicGeneratorPanel({
     generateMusicTrack,
     clearErrors
   } = useElevenLabs();
+
+  // Update customInput when external prompt is provided
+  useEffect(() => {
+    if (externalPrompt) {
+      setCustomInput(externalPrompt);
+      setShowCustomInput(true);
+    }
+  }, [externalPrompt]);
 
   // Combined music styles with gradient colors and BPM ranges
   const musicStyles = [

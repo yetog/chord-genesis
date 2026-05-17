@@ -6,6 +6,8 @@ import PlaybackBar from './components/PlaybackBar';
 import SaveLoadPanel from './components/SaveLoadPanel';
 import MusicGeneratorPanel from './components/ElevenLabsPanel';
 import AdvancedControlsPanel from './components/rpg/AdvancedControlsPanel';
+import SFXPanel from './components/SFXPanel';
+import AudioAnalysisPanel from './components/AudioAnalysisPanel';
 import LoadingCrystal from './components/rpg/LoadingCrystal';
 import { ChordProgression, CHORD_TEMPLATES, SavedIdea, MUSIC_GENRES, EnergyLevel, GrooveType, DrumStyle, BeatDropType, ArtistStyleId } from './types/music';
 import { KEYS, SCALES } from './types/music';
@@ -29,6 +31,7 @@ function App() {
   const [isExporting, setIsExporting] = useState(false);
   const [exportSuccess, setExportSuccess] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [analyzedPrompt, setAnalyzedPrompt] = useState<string>('');
 
   // Advanced controls state
   const [selectedEnergy, setSelectedEnergy] = useState<EnergyLevel>('medium');
@@ -416,12 +419,22 @@ function App() {
                 onVolumeChange={setMasterVolume}
               />
 
+              {/* Style Replicator - Audio Analysis */}
+              <AudioAnalysisPanel
+                onPromptGenerated={setAnalyzedPrompt}
+              />
+
               {/* AI Music Generator */}
               <MusicGeneratorPanel
                 currentProgression={progression}
                 selectedKey={selectedKey}
                 selectedScale={selectedScale}
+                externalPrompt={analyzedPrompt}
+                onExternalPromptClear={() => setAnalyzedPrompt('')}
               />
+
+              {/* SFX Layer */}
+              <SFXPanel />
             </div>
           )}
 
